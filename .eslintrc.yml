@@ -1,0 +1,14 @@
+extends: airbnb
+plugins:
+  - react
+  - jsx-a11y
+  - import
+env:
+  es6: true
+  browser: true
+  node: true
+rules:
+  max-len: off
+  no-case-declarations: off
+  react/prefer-stateless-function: off
+  react/jsx-filename-extension: off
