@@ -1,10 +1,10 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "KNIT Admin",
+  "name": "KNIT API - Admin on Rest",
   "icons": [
     {
       "src": "favicon.ico",
-      "sizes": "192x192",
+      "sizes": "320x320",
       "type": "image/png"
     }
   ],
