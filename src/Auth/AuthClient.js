@@ -53,8 +53,11 @@ function authClient(type, params) {
       break;
 
     case AUTH_ERROR:
-      clearLocalStorage();
-      return Promise.reject();
+      if (params.response.status === 401 || params.response.status === 403) {
+        clearLocalStorage();
+        return Promise.reject();
+      }
+      return Promise.resolve();
 
     default:
       return Promise.resolve();
