@@ -1,6 +1,7 @@
 {
-  "name": "admin",
-  "version": "0.1.0",
+  "name": "knit-api-admin",
+  "description": "ApiPlatform Admin Client for KNIT Rest API",
+  "version": "0.1.1",
   "private": true,
   "dependencies": {
     "@api-platform/admin": "^0.1.15",
@@ -11,9 +12,9 @@
     "react-scripts": "1.0.13"
   },
   "scripts": {
-    "start": "REACT_APP_API_HOST='https://knit-test-api.tk' react-scripts start",
-    "start:local": "REACT_APP_API_HOST='http://localhost:8000' react-scripts start",
-    "build": "react-scripts build",
+    "start": "REACT_APP_API_HOST='http://localhost:8000' react-scripts start",
+    "start:remote": "REACT_APP_API_HOST='https://knit-test-api.tk/v1' react-scripts start",
+    "build": "REACT_APP_API_HOST='https://knit-test-api.tk/v1' react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
