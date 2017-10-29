@@ -61,8 +61,6 @@ function authClient(type, params) { // eslint-disable-line
         headers: new Headers({ 'Content-Type': 'application/json' }),
       });
 
-      console.log('login');
-
       return fetch(requestLogin)
         .then(checkResponse)
         .then(checkTokenAndStoreData);
@@ -82,6 +80,7 @@ function authClient(type, params) { // eslint-disable-line
       return localStorage.getItem('token_data') ? Promise.resolve() : Promise.reject();
 
     default:
+      console.debug(`authClient default: ${type}`);
       return Promise.resolve();
   }
 }
