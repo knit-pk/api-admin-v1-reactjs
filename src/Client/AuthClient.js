@@ -31,6 +31,7 @@ export function checkResponse(response) {
   return response.json();
 }
 
+// eslint-disable-next-line
 export function checkTokenAndStoreData({ token, refresh_token }) {
   const tokenData = jwtDecode(token);
 
@@ -80,7 +81,6 @@ function authClient(type, params) { // eslint-disable-line
       return localStorage.getItem('token_data') ? Promise.resolve() : Promise.reject();
 
     default:
-      console.debug(`authClient default: ${type}`);
       return Promise.resolve();
   }
 }
