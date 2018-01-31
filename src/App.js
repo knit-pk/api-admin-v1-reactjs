@@ -28,12 +28,13 @@ const apiDocumentationParser = jsonldEntrypoint => parseHydraDocumentation(jsonl
             props: {
               path: '/',
               render: () => (
-                <Redirect to={'/login'} />
+                <Redirect to="/login" />
               ),
             },
           });
           break;
         default:
+          // eslint-disable-next-line
           return Promise.reject({ api, customRoutes });
       }
 
