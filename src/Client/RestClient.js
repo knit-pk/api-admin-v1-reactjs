@@ -1,5 +1,5 @@
 import { hydraClient, fetchHydra } from '@api-platform/admin';
-import { checkResponse, checkTokenAndStoreData } from '../Client/AuthClient';
+import { checkStatus, checkTokenAndStoreData } from '../Client/AuthClient';
 
 const refreshTokenLogin = `${process.env.REACT_APP_API_HOST}/token/refresh`;
 
@@ -49,7 +49,7 @@ const fetchWithAuth = (url, options = {}) => {
     });
 
     return fetch(requestRefresh)
-      .then(checkResponse)
+      .then(checkStatus)
       .then(checkTokenAndStoreData)
       .then(({ username, id }) => {
         optionsMerged.user = {
