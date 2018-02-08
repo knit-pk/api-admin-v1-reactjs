@@ -32,6 +32,7 @@ const apiDocumentationParser = jsonldEntrypoint => parseHydraDocumentation(jsonl
               ),
             },
           });
+          localStorage.setItem('should_reload', 'FORCE');
           break;
         default:
           // eslint-disable-next-line

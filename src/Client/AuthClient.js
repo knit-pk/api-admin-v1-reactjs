@@ -10,6 +10,7 @@ function clearLocalStorage() {
   localStorage.removeItem('token');
   localStorage.removeItem('token_data');
   localStorage.removeItem('refresh_token');
+  localStorage.removeItem('should_reload');
 }
 
 /**
@@ -23,8 +24,8 @@ function isAdmin(roles) {
 }
 
 
-export function checkResponse(response) {
-  if (response.status < 200 || response.status >= 300) {
+export function checkStatus(response) {
+  if (response.status !== 200) {
     throw new Error('Invalid credentials.');
   }
 
@@ -63,8 +64,17 @@ function authClient(type, params) { // eslint-disable-line
       });
 
       return fetch(requestLogin)
-        .then(checkResponse)
-        .then(checkTokenAndStoreData);
+        .then(checkStatus)
+        .then(checkTokenAndStoreData)
+        .then((data) => {
+          // Haxes to force re-download authorized documentation
+          if (localStorage.getItem('should_reload') === 'FORCE') {
+            localStorage.removeItem('should_reload');
+            // eslint-disable-next-line
+            location.replace(location.href.split('#')[0])
+          }
+          return data;
+        });
 
     case AUTH_LOGOUT:
       clearLocalStorage();
