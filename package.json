@@ -8,7 +8,7 @@
     "@api-platform/admin": "^0.2.0",
     "@api-platform/api-doc-parser": "^0.3.2",
     "jwt-decode": "^2.2.0",
-    "react-scripts": "1.1.0"
+    "react-scripts": "1.1.1"
   },
   "scripts": {
     "start": "react-scripts start",
