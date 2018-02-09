@@ -1,5 +1,6 @@
 import { hydraClient, fetchHydra } from '@api-platform/admin';
 import { checkStatus, checkTokenAndStoreData } from '../Client/AuthClient';
+import { havingItem } from '../Storage/LocalStorage';
 
 const refreshTokenLogin = `${process.env.REACT_APP_API_HOST}/token/refresh`;
 
@@ -15,33 +16,16 @@ function isTokenExpired(exp) {
   return exp < now || (exp - now) < 360;
 }
 
-/**
- * @todo TokenData object
- * @return {Object} available keys: id, iat, exp, username, roles: []
- */
-function getTokenData() {
-  const tokenData = localStorage.getItem('token_data');
-
-  if (tokenData === null) {
-    return null;
-  }
-
-  return JSON.parse(tokenData);
-}
 
 const fetchWithAuth = (url, options = {}) => {
   const optionsMerged = Object.assign({
     headers: new Headers({ Accept: 'application/ld+json' }),
   }, options);
 
-  const tokenData = getTokenData();
+  const tokenData = havingItem('token_data', data => JSON.parse(data));
   const refreshToken = localStorage.getItem('refresh_token');
 
-  if (
-    refreshToken !== null &&
-    tokenData !== null &&
-    isTokenExpired(tokenData.exp)
-  ) {
+  if (tokenData !== null && isTokenExpired(tokenData.exp)) {
     const requestRefresh = new Request(refreshTokenLogin, {
       method: 'POST',
       body: JSON.stringify({ refresh_token: refreshToken }),
@@ -62,18 +46,14 @@ const fetchWithAuth = (url, options = {}) => {
       });
   }
 
-  const token = localStorage.getItem('token');
-  optionsMerged.user = {
-    authenticated: token !== null,
-  };
-
-  if (optionsMerged.user.authenticated) {
-    optionsMerged.user.token = `Bearer ${token}`;
-    optionsMerged.user.username = tokenData.username;
-    optionsMerged.user.id = tokenData.id;
-  }
-
-  return fetchHydra(url, optionsMerged);
+  return fetchHydra(url, Object.assign(optionsMerged, havingItem('token', token => ({
+    user: {
+      authenticated: true,
+      token: `Bearer ${token}`,
+      username: tokenData.username,
+      id: tokenData.id,
+    },
+  }), { authenticated: false })));
 };
 
 export default api => (hydraClient(api, fetchWithAuth));

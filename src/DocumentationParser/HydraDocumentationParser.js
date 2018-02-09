@@ -2,15 +2,11 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 import parseHydraDocumentation from '@api-platform/api-doc-parser/lib/hydra/parseHydraDocumentation';
+import { havingItem } from '../Storage/LocalStorage';
 
-const fetchHeaders = {};
+const makeFetchHeaders = () => new Headers(havingItem('token', token => ({ Authorization: `Bearer ${token}` }), {}));
 
-const token = localStorage.getItem('token');
-if (typeof token !== 'undefined') {
-  fetchHeaders.Authorization = `Bearer ${token}`;
-}
-
-export default jsonldEntrypoint => parseHydraDocumentation(jsonldEntrypoint, { headers: new Headers(fetchHeaders) })
+export default jsonldEntrypoint => parseHydraDocumentation(jsonldEntrypoint, { headers: makeFetchHeaders() })
   .then(
     ({ api, customRoutes = [] }) => ({
       api,

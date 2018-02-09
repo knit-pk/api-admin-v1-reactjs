@@ -1,16 +1,14 @@
 import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from 'admin-on-rest';
 import jwtDecode from 'jwt-decode';
+import { hasItem, removeItems, havingItem } from '../Storage/LocalStorage';
 
 const tokenLogin = `${process.env.REACT_APP_API_HOST}/token`;
 
 /**
  * Clear local storage befoure logout
  */
-function clearLocalStorage() {
-  localStorage.removeItem('token');
-  localStorage.removeItem('token_data');
-  localStorage.removeItem('refresh_token');
-  localStorage.removeItem('should_reload');
+function clearData() {
+  removeItems('token', 'token_data', 'refresh_token', 'should_reload');
 }
 
 /**
@@ -66,29 +64,27 @@ function authClient(type, params) { // eslint-disable-line
       return fetch(requestLogin)
         .then(checkStatus)
         .then(checkTokenAndStoreData)
-        .then((data) => {
-          // Haxes to force re-download authorized documentation
-          if (localStorage.getItem('should_reload') === 'FORCE') {
-            localStorage.removeItem('should_reload');
+        // Haxes to force re-download authorized documentation
+        .then(data =>
+          havingItem('should_reload', () => {
+            removeItems('should_reload');
             // eslint-disable-next-line
             location.replace(location.href.split('#')[0])
-          }
-          return data;
-        });
+          }, data));
 
     case AUTH_LOGOUT:
-      clearLocalStorage();
+      clearData();
       break;
 
     case AUTH_ERROR:
       if (params.response.status === 401 || params.response.status === 403) {
-        clearLocalStorage();
+        clearData();
         return Promise.reject();
       }
       return Promise.resolve();
 
     case AUTH_CHECK:
-      return localStorage.getItem('token_data') ? Promise.resolve() : Promise.reject();
+      return hasItem('token_data') ? Promise.resolve() : Promise.reject();
 
     default:
       return Promise.resolve();
