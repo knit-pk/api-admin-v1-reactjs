@@ -1,10 +1,4 @@
 /**
- * Determines whether item exists in local storage
- * @param {string} itemName
- */
-export const hasItem = itemName => localStorage.getItem(itemName) !== null;
-
-/**
  * Excutes callback function with item when it exists in local storage
  * @param {string} itemName
  * @param {function(string)} callback

@@ -1,14 +1,18 @@
 import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from 'admin-on-rest';
 import jwtDecode from 'jwt-decode';
-import { hasItem, removeItems, havingItem } from '../Storage/LocalStorage';
+import { removeItems } from '../Storage/LocalStorage';
 
 const tokenLogin = `${process.env.REACT_APP_API_HOST}/token`;
+
+const data = {
+  loggedIn: false,
+};
 
 /**
  * Clear local storage befoure logout
  */
 function clearData() {
-  removeItems('token', 'token_data', 'refresh_token', 'should_reload');
+  removeItems('token', 'token_data', 'refresh_token');
 }
 
 /**
@@ -41,6 +45,7 @@ export function checkTokenAndStoreData({ token, refresh_token }) {
   localStorage.setItem('token', token);
   localStorage.setItem('token_data', JSON.stringify(tokenData));
   localStorage.setItem('refresh_token', refresh_token);
+  data.loggedIn = true;
 
   return tokenData;
 }
@@ -52,6 +57,7 @@ export function checkTokenAndStoreData({ token, refresh_token }) {
  * @param {*} params
  */
 function authClient(type, params) { // eslint-disable-line
+  console.log(data);
   switch (type) {
     case AUTH_LOGIN:
       const { username, password } = params;
@@ -63,14 +69,7 @@ function authClient(type, params) { // eslint-disable-line
 
       return fetch(requestLogin)
         .then(checkStatus)
-        .then(checkTokenAndStoreData)
-        // Haxes to force re-download authorized documentation
-        .then(data =>
-          havingItem('should_reload', () => {
-            removeItems('should_reload');
-            // eslint-disable-next-line
-            location.replace(location.href.split('#')[0])
-          }, data));
+        .then(checkTokenAndStoreData);
 
     case AUTH_LOGOUT:
       clearData();
@@ -84,7 +83,7 @@ function authClient(type, params) { // eslint-disable-line
       return Promise.resolve();
 
     case AUTH_CHECK:
-      return hasItem('token_data') ? Promise.resolve() : Promise.reject();
+      return localStorage.getItem('token_data') ? Promise.resolve() : Promise.reject();
 
     default:
       return Promise.resolve();
