@@ -1,4 +1,6 @@
-extends: airbnb
+extends:
+  - airbnb
+  - plugin:react/recommended
 plugins:
   - react
   - jsx-a11y
@@ -6,6 +8,11 @@ plugins:
 env:
   es6: true
   browser: true
+parserOptions:
+  ecmaVersion: 6
+  sourceType: module
+  ecmaFeatures:
+    jsx: true
 rules:
   max-len: off
   no-case-declarations: off
