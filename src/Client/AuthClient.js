@@ -4,10 +4,6 @@ import { removeItems } from '../Storage/LocalStorage';
 
 const tokenLogin = `${process.env.REACT_APP_API_HOST}/token`;
 
-const data = {
-  loggedIn: false,
-};
-
 /**
  * Clear local storage befoure logout
  */
@@ -45,8 +41,6 @@ export function checkTokenAndStoreData({ token, refresh_token }) {
   localStorage.setItem('token', token);
   localStorage.setItem('token_data', JSON.stringify(tokenData));
   localStorage.setItem('refresh_token', refresh_token);
-  data.loggedIn = true;
-
   return tokenData;
 }
 
@@ -57,7 +51,6 @@ export function checkTokenAndStoreData({ token, refresh_token }) {
  * @param {*} params
  */
 function authClient(type, params) { // eslint-disable-line
-  console.log(data);
   switch (type) {
     case AUTH_LOGIN:
       const { username, password } = params;

@@ -1,21 +1,26 @@
 import React, { Component } from 'react';
 import { AdminBuilder } from '@api-platform/admin';
-import DocumentationParser from './DocumentationParser/HydraDocumentationParser';
-import AuthClient from './Client/AuthClient';
-import RestClient from './Client/RestClient';
+import documentationParser from './DocumentationParser/HydraDocumentationParser';
+import authClient from './Client/AuthClient';
+import restClient from './Client/RestClient';
 import Dashboard from './Dashboard/Dashboard';
 import adminLoginSaga from './Sagas/AdminLoginSaga';
 
 const entrypoint = `${process.env.REACT_APP_API_HOST}`;
 
-export default class App extends Component {
+export class App extends Component {
   constructor(props) {
     super(props);
     this.state = { api: null };
   }
 
+  reloadPage = () => {
+    // eslint-disable-next-line
+    location.reload()
+  }
+
   componentDidMount() {
-    DocumentationParser(entrypoint).then(({ api }) => {
+    documentationParser(entrypoint).then(({ api }) => {
       this.setState({ api });
     });
   }
@@ -26,12 +31,13 @@ export default class App extends Component {
     }
 
     return (<AdminBuilder
-      dashboard={Dashboard}
+      test="test"
+      dashboard={() => <Dashboard updateSchema={this.reloadPage} />}
       customSagas={[adminLoginSaga]}
       api={this.state.api}
       title="KNIT Admin"
-      authClient={AuthClient}
-      restClient={RestClient(this.state.api)}
+      authClient={authClient}
+      restClient={restClient(this.state.api)}
     />);
   }
 }
