@@ -1,20 +1,9 @@
 import { hydraClient, fetchHydra } from '@api-platform/admin';
-import { checkStatus, checkTokenAndStoreData } from '../Client/AuthClient';
-import { havingItem } from '../Storage/LocalStorage';
+import jwtDecode from 'jwt-decode';
+import { checkResponseStatus, checkAdminRoles, mapUserTokenData } from '../Client/AuthClient';
+import { isTokenExpired, getRefreshToken, havingToken, storeTokens, makeBearerToken } from '../Storage/UserToken';
 
 const refreshTokenLogin = `${process.env.REACT_APP_API_HOST}/token/refresh`;
-
-/**
- * Determine if token is already expired or expires in less than 360 seconds.
- *
- * @param {number} exp
- * @return {boolean}
- */
-function isTokenExpired(exp) {
-  // If token expired or is going to expire in 360 seconds..
-  const now = Math.floor(Date.now() / 1000);
-  return exp < now || (exp - now) < 360;
-}
 
 
 const fetchWithAuth = (url, options = {}) => {
@@ -22,10 +11,10 @@ const fetchWithAuth = (url, options = {}) => {
     headers: new Headers({ Accept: 'application/ld+json' }),
   }, options);
 
-  const tokenData = havingItem('token_data', data => JSON.parse(data));
-  const refreshToken = localStorage.getItem('refresh_token');
+  const tokenData = havingToken(token => jwtDecode(token));
+  const refreshToken = getRefreshToken();
 
-  if (tokenData !== null && isTokenExpired(tokenData.exp)) {
+  if (tokenData && isTokenExpired(tokenData.exp) && refreshToken) {
     const requestRefresh = new Request(refreshTokenLogin, {
       method: 'POST',
       body: JSON.stringify({ refresh_token: refreshToken }),
@@ -33,25 +22,28 @@ const fetchWithAuth = (url, options = {}) => {
     });
 
     return fetch(requestRefresh)
-      .then(checkStatus)
-      .then(checkTokenAndStoreData)
-      .then(({ username, id }) => {
+      .then(checkResponseStatus)
+      .then(checkAdminRoles)
+      .then(storeTokens)
+      .then((response) => {
+        storeTokens(mapUserTokenData(response));
+        const { username, id } = jwtDecode(response.token);
         optionsMerged.user = {
-          username,
           id,
+          username,
+          token: makeBearerToken(response.token),
           authenticated: true,
-          token: `Bearer ${localStorage.getItem('token')}`,
         };
         return fetchHydra(url, optionsMerged);
       });
   }
 
-  return fetchHydra(url, Object.assign(optionsMerged, havingItem('token', token => ({
+  return fetchHydra(url, Object.assign(optionsMerged, havingToken(token => ({
     user: {
-      authenticated: true,
-      token: `Bearer ${token}`,
-      username: tokenData.username,
       id: tokenData.id,
+      username: tokenData.username,
+      token: makeBearerToken(token),
+      authenticated: true,
     },
   }), { authenticated: false })));
 };
