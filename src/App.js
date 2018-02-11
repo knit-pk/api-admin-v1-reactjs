@@ -1,63 +1,44 @@
 import React, { Component } from 'react';
-import { HydraAdmin } from '@api-platform/admin';
-import { Redirect } from 'react-router-dom';
-import parseHydraDocumentation from '@api-platform/api-doc-parser/lib/hydra/parseHydraDocumentation';
-import AuthClient from './Client/AuthClient';
-import RestClient from './Client/RestClient';
+import { AdminBuilder } from '@api-platform/admin';
+import documentationParser from './DocumentationParser/HydraDocumentationParser';
+import authClient from './Client/AuthClient';
+import restClient from './Client/RestClient';
+import Dashboard from './Dashboard/Dashboard';
+import adminLoginSaga from './Sagas/AdminLoginSaga';
 
 const entrypoint = `${process.env.REACT_APP_API_HOST}`;
-const fetchHeaders = {};
 
-const token = localStorage.getItem('token');
-if (typeof token !== 'undefined') {
-  fetchHeaders.Authorization = `Bearer ${token}`;
+// check if token exists and is not expired
+if (!localStorage.getItem('refresh_token')) {
+  localStorage.setItem('should_reload', 'FIRST_TIME');
 }
 
-const apiDocumentationParser = jsonldEntrypoint => parseHydraDocumentation(jsonldEntrypoint, { headers: new Headers(fetchHeaders) })
-  .then(
-    ({ api, customRoutes = [] }) => ({
-      api,
-      customRoutes,
-      hasError: false,
-      loaded: true,
-    }),
-    ({ status, api, customRoutes = [] }) => {
-      switch (status) {
-        case 401:
-          customRoutes.push({
-            props: {
-              path: '/',
-              render: () => (
-                <Redirect to="/login" />
-              ),
-            },
-          });
-          localStorage.setItem('should_reload', 'FORCE');
-          break;
-        default:
-          // eslint-disable-next-line
-          return Promise.reject({ api, customRoutes });
-      }
+export default class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { api: null };
+  }
 
+  componentDidMount() {
+    documentationParser(entrypoint).then(({ api }) => {
+      this.setState({ api });
+    });
+  }
 
-      return Promise.resolve({
-        api,
-        customRoutes,
-        hasError: true,
-        loaded: true,
-      });
-    },
-  );
-
-class App extends Component {
   render() {
-    return (<HydraAdmin
-      apiDocumentationParser={apiDocumentationParser}
-      entrypoint={entrypoint}
-      restClient={RestClient}
-      authClient={AuthClient}
+    if (this.state.api === null) {
+      return <div>Loading...</div>;
+    }
+
+    return (<AdminBuilder
+      test="test"
+      // eslint-disable-next-line
+      dashboard={() => <Dashboard updateSchema={() => location.reload()} />}
+      customSagas={[adminLoginSaga]}
+      api={this.state.api}
+      title="KNIT Admin"
+      authClient={authClient}
+      restClient={restClient(this.state.api)}
     />);
   }
 }
-
-export default App;

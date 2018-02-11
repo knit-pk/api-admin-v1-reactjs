@@ -1,16 +1,14 @@
 import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from 'admin-on-rest';
 import jwtDecode from 'jwt-decode';
+import { removeItems } from '../Storage/LocalStorage';
 
 const tokenLogin = `${process.env.REACT_APP_API_HOST}/token`;
 
 /**
  * Clear local storage befoure logout
  */
-function clearLocalStorage() {
-  localStorage.removeItem('token');
-  localStorage.removeItem('token_data');
-  localStorage.removeItem('refresh_token');
-  localStorage.removeItem('should_reload');
+function clearData() {
+  removeItems('token', 'token_data', 'refresh_token');
 }
 
 /**
@@ -43,7 +41,6 @@ export function checkTokenAndStoreData({ token, refresh_token }) {
   localStorage.setItem('token', token);
   localStorage.setItem('token_data', JSON.stringify(tokenData));
   localStorage.setItem('refresh_token', refresh_token);
-
   return tokenData;
 }
 
@@ -65,24 +62,15 @@ function authClient(type, params) { // eslint-disable-line
 
       return fetch(requestLogin)
         .then(checkStatus)
-        .then(checkTokenAndStoreData)
-        .then((data) => {
-          // Haxes to force re-download authorized documentation
-          if (localStorage.getItem('should_reload') === 'FORCE') {
-            localStorage.removeItem('should_reload');
-            // eslint-disable-next-line
-            location.replace(location.href.split('#')[0])
-          }
-          return data;
-        });
+        .then(checkTokenAndStoreData);
 
     case AUTH_LOGOUT:
-      clearLocalStorage();
+      clearData();
       break;
 
     case AUTH_ERROR:
       if (params.response.status === 401 || params.response.status === 403) {
-        clearLocalStorage();
+        clearData();
         return Promise.reject();
       }
       return Promise.resolve();
