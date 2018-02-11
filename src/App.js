@@ -8,15 +8,15 @@ import adminLoginSaga from './Sagas/AdminLoginSaga';
 
 const entrypoint = `${process.env.REACT_APP_API_HOST}`;
 
-export class App extends Component {
+// check if token exists and is not expired
+if (!localStorage.getItem('refresh_token')) {
+  localStorage.setItem('should_reload', 'FIRST_TIME');
+}
+
+export default class App extends Component {
   constructor(props) {
     super(props);
     this.state = { api: null };
-  }
-
-  reloadPage = () => {
-    // eslint-disable-next-line
-    location.reload()
   }
 
   componentDidMount() {
@@ -32,7 +32,8 @@ export class App extends Component {
 
     return (<AdminBuilder
       test="test"
-      dashboard={() => <Dashboard updateSchema={this.reloadPage} />}
+      // eslint-disable-next-line
+      dashboard={() => <Dashboard updateSchema={() => location.reload()} />}
       customSagas={[adminLoginSaga]}
       api={this.state.api}
       title="KNIT Admin"

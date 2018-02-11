@@ -9,8 +9,8 @@ class Dashboard extends Component {
     return (
       <Card>
         <ViewTitle title="Dashboard" />
-        <CardText>Lorem ipsum sic dolor amet...</CardText>
-        <FlatButton label="Update schema" onClick={this.props.updateSchema} />
+        <CardText>Welcome to Admin of KNIT API</CardText>
+        <FlatButton label="Reload to update admin schema" onClick={this.props.updateSchema} />
       </Card>);
   }
 }
