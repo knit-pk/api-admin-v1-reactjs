@@ -1,19 +1,19 @@
 import React, { Component } from 'react';
 import { AdminBuilder } from '@api-platform/admin';
+import Dashboard from './Dashboard/Dashboard';
 import documentationParser from './DocumentationParser/HydraDocumentationParser';
 import authClient from './Client/AuthClient';
 import restClient from './Client/RestClient';
-import Dashboard from './Dashboard/Dashboard';
 import adminLoginSaga from './Sagas/AdminLoginSaga';
 
 const entrypoint = `${process.env.REACT_APP_API_HOST}`;
 
 // check if token exists and is not expired
-if (!localStorage.getItem('refresh_token')) {
+if (!localStorage.getItem('token')) {
   localStorage.setItem('should_reload', 'FIRST_TIME');
 }
 
-export default class App extends Component {
+class App extends Component {
   constructor(props) {
     super(props);
     this.state = { api: null };
@@ -31,9 +31,7 @@ export default class App extends Component {
     }
 
     return (<AdminBuilder
-      test="test"
-      // eslint-disable-next-line
-      dashboard={() => <Dashboard updateSchema={() => location.reload()} />}
+      dashboard={() => <Dashboard updateSchema={() => location.reload()} />} // eslint-disable-line
       customSagas={[adminLoginSaga]}
       api={this.state.api}
       title="KNIT Admin"
@@ -42,3 +40,5 @@ export default class App extends Component {
     />);
   }
 }
+
+export default App;

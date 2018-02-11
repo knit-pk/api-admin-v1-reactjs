@@ -1,15 +1,8 @@
 import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from 'admin-on-rest';
 import jwtDecode from 'jwt-decode';
-import { removeItems } from '../Storage/LocalStorage';
+import { storeTokens, clearTokens, havingToken, isTokenExpired } from '../Storage/UserToken';
 
 const tokenLogin = `${process.env.REACT_APP_API_HOST}/token`;
-
-/**
- * Clear local storage befoure logout
- */
-function clearData() {
-  removeItems('token', 'token_data', 'refresh_token');
-}
 
 /**
  * Determine if admin roles present in roles array
@@ -22,7 +15,7 @@ function isAdmin(roles) {
 }
 
 
-export function checkStatus(response) {
+export function checkResponseStatus(response) {
   if (response.status !== 200) {
     throw new Error('Invalid credentials.');
   }
@@ -30,19 +23,17 @@ export function checkStatus(response) {
   return response.json();
 }
 
-// eslint-disable-next-line
-export function checkTokenAndStoreData({ token, refresh_token }) {
-  const tokenData = jwtDecode(token);
+export function checkAdminRoles(response) {
+  const { roles, username } = jwtDecode(response.token);
 
-  if (!isAdmin(tokenData.roles)) {
-    throw new Error(`User ${tokenData.username} is not an admin.`);
+  if (!isAdmin(roles)) {
+    throw new Error(`User ${username} is not an admin.`);
   }
 
-  localStorage.setItem('token', token);
-  localStorage.setItem('token_data', JSON.stringify(tokenData));
-  localStorage.setItem('refresh_token', refresh_token);
-  return tokenData;
+  return response;
 }
+
+export const mapUserTokenData = response => ({ token: response.token, refreshToken: response.refresh_token });
 
 /**
  * Authentication client
@@ -61,22 +52,25 @@ function authClient(type, params) { // eslint-disable-line
       });
 
       return fetch(requestLogin)
-        .then(checkStatus)
-        .then(checkTokenAndStoreData);
+        .then(checkResponseStatus)
+        .then(checkAdminRoles)
+        .then(mapUserTokenData)
+        .then(storeTokens);
 
     case AUTH_LOGOUT:
-      clearData();
+      clearTokens();
       break;
 
     case AUTH_ERROR:
       if (params.response.status === 401 || params.response.status === 403) {
-        clearData();
+        clearTokens();
         return Promise.reject();
       }
       return Promise.resolve();
 
     case AUTH_CHECK:
-      return localStorage.getItem('token_data') ? Promise.resolve() : Promise.reject();
+      const tokenData = havingToken(token => jwtDecode(token));
+      return (tokenData && !isTokenExpired(tokenData.exp)) ? Promise.resolve() : Promise.reject();
 
     default:
       return Promise.resolve();
