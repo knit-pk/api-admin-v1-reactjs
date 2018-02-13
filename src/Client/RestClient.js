@@ -1,51 +1,51 @@
 import { hydraClient, fetchHydra } from '@api-platform/admin';
-import jwtDecode from 'jwt-decode';
-import { checkResponseStatus, checkAdminRoles, mapUserTokenData } from '../Client/AuthClient';
-import { isTokenExpired, getRefreshToken, havingToken, storeTokens, makeBearerToken } from '../Storage/UserToken';
+import { isTokenExpired, getRefreshToken, storeTokens, makeBearerToken, getTokenPayload, getToken } from '../Storage/UserToken';
+import { adminLogin, makeRefreshTokenLoginRequest } from './AuthClient';
 
 const refreshTokenLogin = `${process.env.REACT_APP_API_HOST}/token/refresh`;
 
+const makeUser = () => ({
+  authenticated: false,
+});
 
-const fetchWithAuth = (url, options = {}) => {
-  const optionsMerged = Object.assign({
-    headers: new Headers({ Accept: 'application/ld+json' }),
-  }, options);
+const makeAuthUser = ({ id, username, token }) => ({
+  id,
+  username,
+  token: makeBearerToken(token),
+  authenticated: true,
+});
 
-  const tokenData = havingToken(token => jwtDecode(token));
+export const resolveUser = () => {
+  const token = getToken();
+  const payload = getTokenPayload();
+
+  if (!token || !payload) {
+    return makeUser();
+  }
+
+  const { exp, id, username } = payload;
+  if (!isTokenExpired(exp)) {
+    return makeAuthUser({ id, username, token });
+  }
+
   const refreshToken = getRefreshToken();
-
-  if (tokenData && isTokenExpired(tokenData.exp) && refreshToken) {
-    const requestRefresh = new Request(refreshTokenLogin, {
-      method: 'POST',
-      body: JSON.stringify({ refresh_token: refreshToken }),
-      headers: new Headers({ 'Content-Type': 'application/json' }),
-    });
-
-    return fetch(requestRefresh)
-      .then(checkResponseStatus)
-      .then(checkAdminRoles)
-      .then(storeTokens)
-      .then((response) => {
-        storeTokens(mapUserTokenData(response));
-        const { username, id } = jwtDecode(response.token);
-        optionsMerged.user = {
-          id,
-          username,
-          token: makeBearerToken(response.token),
-          authenticated: true,
-        };
-        return fetchHydra(url, optionsMerged);
+  if (refreshToken) {
+    return adminLogin(makeRefreshTokenLoginRequest(refreshTokenLogin, { refreshToken }))
+      .then((tokens) => {
+        storeTokens(tokens);
+        return makeAuthUser({
+          id: tokens.payload.id,
+          username: tokens.payload.username,
+          token: tokens.token,
+        });
       });
   }
 
-  return fetchHydra(url, Object.assign(optionsMerged, havingToken(token => ({
-    user: {
-      id: tokenData.id,
-      username: tokenData.username,
-      token: makeBearerToken(token),
-      authenticated: true,
-    },
-  }), { authenticated: false })));
+  return makeUser();
 };
+
+const fetchWithAuth = (url, options = {}) => fetchHydra(url, Object.assign({
+  headers: new Headers({ Accept: 'application/ld+json' }),
+}, options, { user: resolveUser() }));
 
 export default api => (hydraClient(api, fetchWithAuth));

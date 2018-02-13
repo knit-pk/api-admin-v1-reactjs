@@ -1,16 +1,15 @@
 
 import parseHydraDocumentation from '@api-platform/api-doc-parser/lib/hydra/parseHydraDocumentation';
-import jwtDecode from 'jwt-decode';
-import { havingToken, isTokenExpired, makeBearerToken } from '../Storage/UserToken';
+import { resolveUser } from '../Client/RestClient';
 
 
-const makeFetchHeaders = () => new Headers(havingToken((token) => {
-  const { exp } = jwtDecode(token);
-  if (!isTokenExpired(exp)) {
-    return { Authorization: makeBearerToken(token) };
+const makeFetchHeaders = () => {
+  const headers = {};
+  const user = resolveUser();
+  if (user.authenticated) {
+    headers.Authorization = user.token;
   }
-
-  return {};
-}, {}));
+  return new Headers(headers);
+};
 
 export default jsonldEntrypoint => parseHydraDocumentation(jsonldEntrypoint, { headers: makeFetchHeaders() });

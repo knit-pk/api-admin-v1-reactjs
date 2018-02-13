@@ -1,39 +1,23 @@
 import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from 'admin-on-rest';
-import jwtDecode from 'jwt-decode';
-import { storeTokens, clearTokens, havingToken, isTokenExpired } from '../Storage/UserToken';
+import { storeTokens, clearTokens, isTokenExpired, havingTokenPayload } from '../Storage/UserToken';
+import decodeTokens from './UserTokensDecoder';
 
 const tokenLogin = `${process.env.REACT_APP_API_HOST}/token`;
 
-/**
- * Determine if admin roles present in roles array
- *
- * @param {Array<string>} roles
- * @return {boolean}
- */
-function isAdmin(roles) {
-  return roles.indexOf('ROLE_ADMIN') !== -1 || roles.indexOf('ROLE_SUPER_ADMIN') !== -1;
-}
+const makeLoginRequest = (url, payload) => new Request(url, {
+  method: 'POST',
+  body: JSON.stringify(payload),
+  headers: new Headers({ 'Content-Type': 'application/json' }),
+});
 
+export const makeRefreshTokenLoginRequest = (url, refreshToken) => makeLoginRequest(url, { refresh_token: refreshToken });
 
-export function checkResponseStatus(response) {
-  if (response.status !== 200) {
-    throw new Error('Invalid credentials.');
-  }
+export const makeCredentialsLoginRequest = (url, { username, password }) => makeLoginRequest(url, { username, password });
 
-  return response.json();
-}
-
-export function checkAdminRoles(response) {
-  const { roles, username } = jwtDecode(response.token);
-
-  if (!isAdmin(roles)) {
-    throw new Error(`User ${username} is not an admin.`);
-  }
-
-  return response;
-}
-
-export const mapUserTokenData = response => ({ token: response.token, refreshToken: response.refresh_token });
+// TODO: Catch
+export const adminLogin = request => fetch(request)
+  .then(response => response.json())
+  .then(decodeTokens);
 
 /**
  * Authentication client
@@ -45,16 +29,7 @@ function authClient(type, params) { // eslint-disable-line
   switch (type) {
     case AUTH_LOGIN:
       const { username, password } = params;
-      const requestLogin = new Request(tokenLogin, {
-        method: 'POST',
-        body: JSON.stringify({ username, password }),
-        headers: new Headers({ 'Content-Type': 'application/json' }),
-      });
-
-      return fetch(requestLogin)
-        .then(checkResponseStatus)
-        .then(checkAdminRoles)
-        .then(mapUserTokenData)
+      return adminLogin(makeCredentialsLoginRequest(tokenLogin, { username, password }))
         .then(storeTokens);
 
     case AUTH_LOGOUT:
@@ -69,8 +44,7 @@ function authClient(type, params) { // eslint-disable-line
       return Promise.resolve();
 
     case AUTH_CHECK:
-      const tokenData = havingToken(token => jwtDecode(token));
-      return (tokenData && !isTokenExpired(tokenData.exp)) ? Promise.resolve() : Promise.reject();
+      return havingTokenPayload(({ exp }) => isTokenExpired(exp), true) ? Promise.reject() : Promise.resolve();
 
     default:
       return Promise.resolve();
