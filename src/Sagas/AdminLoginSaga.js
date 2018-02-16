@@ -5,8 +5,7 @@ import { havingItem } from '../Storage/LocalStorage';
 function* adminLoggedIn() {
   havingItem('should_reload', () => {
     localStorage.removeItem('should_reload');
-    // eslint-disable-next-line
-    location.reload();
+    window.location.reload();
   });
   yield put(showNotification('Admin logged in successfully!'));
 }

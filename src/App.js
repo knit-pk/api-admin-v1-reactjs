@@ -31,7 +31,7 @@ class App extends Component {
     }
 
     return (<AdminBuilder
-      dashboard={() => <Dashboard updateSchema={() => location.reload()} />} // eslint-disable-line
+      dashboard={() => <Dashboard updateSchema={() => window.location.reload()} />}
       customSagas={[adminLoginSaga]}
       api={this.state.api}
       title="KNIT Admin"
