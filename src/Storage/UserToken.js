@@ -25,4 +25,4 @@ export const storeTokens = ({ token, refreshToken, payload }) => {
 
 export const storeRefreshToken = refreshToken => localStorage.setItem('refresh_token', refreshToken);
 
-export const clearTokens = () => removeItems('token', 'refresh_token', 'token_payload', 'hydra_api');
+export const clearTokens = () => removeItems('token', 'refresh_token', 'token_payload');

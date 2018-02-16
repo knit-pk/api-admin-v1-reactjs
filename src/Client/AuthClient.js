@@ -1,6 +1,7 @@
 import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from 'admin-on-rest';
 import { storeTokens, clearTokens, getRefreshToken } from '../Storage/UserToken';
 import decodeTokens from './UserTokensDecoder';
+import { removeHydraDocs } from '../Storage/HydraDocs';
 
 const tokenLogin = `${process.env.REACT_APP_API_HOST}/token`;
 
@@ -40,15 +41,18 @@ function authClient(type, params) { // eslint-disable-line
 
     case AUTH_LOGOUT:
       clearTokens();
+      removeHydraDocs();
       break;
 
     case AUTH_ERROR:
       if (params.response.status === 401 || params.response.status === 403) {
         clearTokens();
+        removeHydraDocs();
         return Promise.reject();
       }
       return Promise.resolve();
 
+    // TODO: Possibly not needed condition
     case AUTH_CHECK:
       return getRefreshToken() ? Promise.resolve() : Promise.reject();
 
