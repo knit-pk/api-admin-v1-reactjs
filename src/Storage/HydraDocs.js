@@ -15,7 +15,32 @@ function makeField({
   name, id, range, reference, required, description, maxCardinality,
 }) {
   return new Field(name, {
-    id, range, reference, required, description, maxCardinality,
+    id,
+    range,
+    required,
+    description,
+    maxCardinality,
+    reference: reference !== null ? reference.id : null,
+  });
+}
+
+/**
+ * @param {Array<Object>} fields
+ * @param {Map<String,Field>} fieldsById
+ * @param {Set<Field>} fieldSet
+ *
+ * @returns {Array<Field>}
+ */
+function resolveFields(fields, fieldsById, fieldSet) {
+  return fields.map((field) => {
+    if (fieldsById.has(field.id)) {
+      return fieldsById.get(field.id);
+    }
+
+    const mappedField = makeField(field);
+    fieldsById.set(field.id, mappedField);
+    fieldSet.add(mappedField);
+    return mappedField;
   });
 }
 
@@ -32,35 +57,15 @@ function makeResources(resources) {
     name, url, id, title, readableFields, writableFields,
   }) => {
     const fieldsById = new Map();
-
-    const mappedReadableFields = readableFields.map((field) => {
-      if (fieldsById.has(field.id)) {
-        return fieldsById.get(field.id);
-      }
-
-      const mappedField = makeField(field);
-      fieldsById.set(field.id, mappedField);
-      fields.add(mappedField);
-      return mappedField;
-    });
-
-    const mappedWritableFields = writableFields.map((field) => {
-      if (fieldsById.has(field.id)) {
-        return fieldsById.get(field.id);
-      }
-
-      const mappedField = makeField(field);
-      fieldsById.set(field.id, mappedField);
-      fields.add(mappedField);
-      return mappedField;
-    });
+    const resolvedReadableFields = resolveFields(readableFields, fieldsById, fields);
+    const resolvedWritableFields = resolveFields(writableFields, fieldsById, fields);
 
     const mappedResource = new Resource(name, url, {
       id,
       title,
+      readableFields: resolvedReadableFields,
+      writableFields: resolvedWritableFields,
       fields: Array.from(fieldsById.values()),
-      readableFields: mappedReadableFields,
-      writableFields: mappedWritableFields,
     });
 
     resourcesById.set(id, mappedResource);
@@ -71,7 +76,7 @@ function makeResources(resources) {
   // Resolve references
   for (let field of fields) { // eslint-disable-line
     if (field.reference !== null) {
-      field.reference = resourcesById.has(field.reference.id) ? resourcesById.get(field.reference.id) : null;
+      field.reference = resourcesById.has(field.reference) ? resourcesById.get(field.reference) : null;
     }
   }
 
