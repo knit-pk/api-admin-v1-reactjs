@@ -5,11 +5,11 @@ import documentationParser from './DocumentationParser/HydraDocumentationParser'
 import authClient from './Client/AuthClient';
 import restClient from './Client/RestClient';
 import adminLoginSaga from './Sagas/AdminLoginSaga';
+import { getRefreshToken } from './Storage/UserToken';
 
 const entrypoint = `${process.env.REACT_APP_API_HOST}`;
 
-// check if token exists and is not expired
-if (!localStorage.getItem('token')) {
+if (!getRefreshToken()) {
   localStorage.setItem('should_reload', 'FIRST_TIME');
 }
 
