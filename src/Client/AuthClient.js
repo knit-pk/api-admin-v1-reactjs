@@ -15,7 +15,6 @@ export const makeRefreshTokenLoginRequest = (url, refreshToken) => makeLoginRequ
 
 export const makeCredentialsLoginRequest = (url, { username, password }) => makeLoginRequest(url, { username, password });
 
-// TODO: Catch
 export const adminLogin = request => fetch(request)
   .then((response) => {
     if (response.status !== 200) {
