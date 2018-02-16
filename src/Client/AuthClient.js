@@ -1,5 +1,5 @@
 import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from 'admin-on-rest';
-import { storeTokens, clearTokens, isTokenExpired, havingTokenPayload } from '../Storage/UserToken';
+import { storeTokens, clearTokens, getRefreshToken } from '../Storage/UserToken';
 import decodeTokens from './UserTokensDecoder';
 
 const tokenLogin = `${process.env.REACT_APP_API_HOST}/token`;
@@ -44,7 +44,7 @@ function authClient(type, params) { // eslint-disable-line
       return Promise.resolve();
 
     case AUTH_CHECK:
-      return havingTokenPayload(({ exp }) => isTokenExpired(exp), true) ? Promise.reject() : Promise.resolve();
+      return getRefreshToken() ? Promise.resolve() : Promise.reject();
 
     default:
       return Promise.resolve();

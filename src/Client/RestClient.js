@@ -30,7 +30,7 @@ export const resolveUser = () => {
 
   const refreshToken = getRefreshToken();
   if (refreshToken) {
-    return adminLogin(makeRefreshTokenLoginRequest(refreshTokenLogin, { refreshToken }))
+    return adminLogin(makeRefreshTokenLoginRequest(refreshTokenLogin, refreshToken))
       .then((tokens) => {
         storeTokens(tokens);
         return makeAuthUser({
@@ -44,8 +44,13 @@ export const resolveUser = () => {
   return makeUser();
 };
 
-const fetchWithAuth = (url, options = {}) => fetchHydra(url, Object.assign({
-  headers: new Headers({ Accept: 'application/ld+json' }),
-}, options, { user: resolveUser() }));
+const fetchResolvingUser = (url, options = {}) => {
+  const defaultHeaders = {
+    headers: new Headers({ Accept: 'application/ld+json' }),
+  };
 
-export default api => (hydraClient(api, fetchWithAuth));
+  return (new Promise(resolve => resolve(resolveUser()))
+    .then(user => fetchHydra(url, Object.assign({}, defaultHeaders, options, { user }))));
+};
+
+export default api => (hydraClient(api, fetchResolvingUser));
