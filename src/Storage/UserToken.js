@@ -9,15 +9,20 @@ export const makeBearerToken = token => `Bearer ${token}`;
 
 export const havingToken = (callback, defaultValue = null) => havingItem('token', callback, defaultValue);
 
+export const havingTokenPayload = (callback, defaultValue = null) => havingItem('token_payload', payload => callback(JSON.parse(payload)), defaultValue);
+
 export const getToken = () => localStorage.getItem('token');
+
+export const getTokenPayload = () => havingTokenPayload(payload => payload);
 
 export const getRefreshToken = () => localStorage.getItem('refresh_token');
 
-export const storeTokens = ({ token, refreshToken }) => {
+export const storeTokens = ({ token, refreshToken, payload }) => {
   localStorage.setItem('token', token);
   localStorage.setItem('refresh_token', refreshToken);
+  localStorage.setItem('token_payload', JSON.stringify(payload));
 };
 
-export const storeRefreshToken = token => localStorage.setItem('refresh_token', token);
+export const storeRefreshToken = refreshToken => localStorage.setItem('refresh_token', refreshToken);
 
-export const clearTokens = () => removeItems('token', 'refresh_token');
+export const clearTokens = () => removeItems('token', 'refresh_token', 'token_payload');
