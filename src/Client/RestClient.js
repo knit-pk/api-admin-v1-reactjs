@@ -15,7 +15,7 @@ const makeAuthUser = ({ id, username, token }) => ({
   authenticated: true,
 });
 
-export const resolveUser = () => {
+const getUser = () => {
   const token = getToken();
   const payload = getTokenPayload();
 
@@ -44,13 +44,14 @@ export const resolveUser = () => {
   return makeUser();
 };
 
+export const resolveUser = () => new Promise(resolve => resolve(getUser()));
+
 const fetchResolvingUser = (url, options = {}) => {
   const defaultHeaders = {
     headers: new Headers({ Accept: 'application/ld+json' }),
   };
 
-  return (new Promise(resolve => resolve(resolveUser()))
-    .then(user => fetchHydra(url, Object.assign({}, defaultHeaders, options, { user }))));
+  return resolveUser().then(user => fetchHydra(url, Object.assign({}, defaultHeaders, options, { user })));
 };
 
 export default api => (hydraClient(api, fetchResolvingUser));

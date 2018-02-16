@@ -3,13 +3,12 @@ import parseHydraDocumentation from '@api-platform/api-doc-parser/lib/hydra/pars
 import { resolveUser } from '../Client/RestClient';
 
 
-const makeFetchHeaders = () => {
-  const headers = {};
-  const user = resolveUser();
-  if (user.authenticated) {
-    headers.Authorization = user.token;
-  }
-  return new Headers(headers);
-};
-
-export default jsonldEntrypoint => parseHydraDocumentation(jsonldEntrypoint, { headers: makeFetchHeaders() });
+export default function parseHydraDocumentationForUser(jsonldEntrypoint) {
+  return resolveUser().then(({ authenticated, token }) => {
+    const headers = {};
+    if (authenticated) {
+      headers.authorization = token;
+    }
+    return new Headers(headers);
+  }).then(headers => parseHydraDocumentation(jsonldEntrypoint, { headers }));
+}
