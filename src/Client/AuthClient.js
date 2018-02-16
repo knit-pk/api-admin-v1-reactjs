@@ -16,6 +16,12 @@ export const makeCredentialsLoginRequest = (url, { username, password }) => make
 
 // TODO: Catch
 export const adminLogin = request => fetch(request)
+  .then((response) => {
+    if (response.status !== 200) {
+      throw new Error('Invalid credentials');
+    }
+    return response;
+  })
   .then(response => response.json())
   .then(decodeTokens);
 
