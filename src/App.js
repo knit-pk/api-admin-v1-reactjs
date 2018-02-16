@@ -6,12 +6,18 @@ import authClient from './Client/AuthClient';
 import restClient from './Client/RestClient';
 import adminLoginSaga from './Sagas/AdminLoginSaga';
 import { getRefreshToken } from './Storage/UserToken';
+import { removeHydraDocs } from './Storage/HydraDocs';
 
 const entrypoint = `${process.env.REACT_APP_API_HOST}`;
 
 if (!getRefreshToken()) {
   localStorage.setItem('should_reload', 'FIRST_TIME');
 }
+
+const updateHydraDocs = () => {
+  removeHydraDocs();
+  window.location.reload();
+};
 
 class App extends Component {
   constructor(props) {
@@ -31,7 +37,7 @@ class App extends Component {
     }
 
     return (<AdminBuilder
-      dashboard={() => <Dashboard updateSchema={() => window.location.reload()} />}
+      dashboard={() => <Dashboard updateSchema={updateHydraDocs} />}
       customSagas={[adminLoginSaga]}
       api={this.state.api}
       title="KNIT Admin"

@@ -38,7 +38,9 @@ const getUser = () => {
           username: tokens.payload.username,
           token: tokens.token,
         });
-      });
+      })
+      // TODO: Display error
+      .catch(() => makeUser());
   }
 
   return makeUser();
