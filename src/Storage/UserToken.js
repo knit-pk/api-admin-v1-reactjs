@@ -17,6 +17,8 @@ export const getTokenPayload = () => havingTokenPayload(payload => payload);
 
 export const getRefreshToken = () => localStorage.getItem('refresh_token');
 
+export const hasRefreshToken = () => getRefreshToken() !== null;
+
 export const storeTokens = ({ token, refreshToken, payload }) => {
   localStorage.setItem('token', token);
   localStorage.setItem('refresh_token', refreshToken);
