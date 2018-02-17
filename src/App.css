@@ -18,6 +18,13 @@
   font-size: large;
 }
 
+/*
+ Hack for App usability on vertical
+ */
+div.list-page div div div:nth-child(2) div:first-child div:first-child {
+  overflow-x: auto !important;
+}
+
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }

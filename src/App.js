@@ -7,6 +7,7 @@ import restClient from './Client/RestClient';
 import adminLoginSaga from './Sagas/AdminLoginSaga';
 import { getRefreshToken } from './Storage/UserToken';
 import { removeHydraDocs } from './Storage/HydraDocs';
+import './App.css';
 
 const entrypoint = `${process.env.REACT_APP_API_HOST}`;
 
