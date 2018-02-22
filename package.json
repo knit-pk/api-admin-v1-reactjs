@@ -5,7 +5,7 @@
   "homepage": "https://knit-test-api.tk/admin-on-rest",
   "private": true,
   "dependencies": {
-    "@api-platform/admin": "^0.2.0",
+    "@api-platform/admin": "^0.3.0",
     "@api-platform/api-doc-parser": "^0.3.2",
     "circular-json": "^0.5.1",
     "jwt-decode": "^2.2.0",
