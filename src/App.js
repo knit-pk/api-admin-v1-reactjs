@@ -8,7 +8,9 @@ import customSagas from './Sagas';
 import customReducers from './Reducers';
 import './App.css';
 
-const entrypoint = `${process.env.REACT_APP_API_HOST}`;
+const entrypoint = `${process.env.REACT_APP_API_URL}`;
+
+console.error(process.env);
 
 class App extends Component {
   constructor(props) {
