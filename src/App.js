@@ -10,8 +10,6 @@ import './App.css';
 
 const entrypoint = `${process.env.REACT_APP_API_URL}`;
 
-console.error(process.env);
-
 class App extends Component {
   constructor(props) {
     super(props);
