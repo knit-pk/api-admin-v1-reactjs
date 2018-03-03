@@ -2,7 +2,7 @@ import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from 'admin-on-rest';
 import { storeTokens, clearTokens, getRefreshToken } from '../Storage/UserToken';
 import decodeTokens from './UserTokensDecoder';
 
-const tokenLogin = `${process.env.REACT_APP_API_HOST}/token`;
+const tokenLogin = `${process.env.REACT_APP_API_URL}/token`;
 
 const makeLoginRequest = (url, payload) => new Request(url, {
   method: 'POST',

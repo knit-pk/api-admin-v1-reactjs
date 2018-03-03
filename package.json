@@ -1,16 +1,16 @@
 {
   "name": "knit-api-admin",
   "description": "ApiPlatform Admin Client for KNIT Rest API",
-  "version": "0.2.0",
-  "homepage": "https://knit-test-api.tk/admin-on-rest",
+  "version": "0.3.0",
+  "homepage": "https://api.knit.pk.edu.pl/admin",
   "private": true,
   "dependencies": {
     "@api-platform/admin": "^0.3.1",
     "@api-platform/api-doc-parser": "^0.3.2",
     "circular-json": "^0.5.1",
     "jwt-decode": "^2.2.0",
-    "react": "^15.6.1",
-    "react-dom": "^15.6.1",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
     "react-markdown": "^3.2.2",
     "react-scripts": "^1.1.1"
   },
