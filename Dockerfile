@@ -1,6 +1,6 @@
 FROM node:9-alpine
 
-ARG PUBLIC_URL=http://api.knit.pk.edu.pl/admin
+ARG PUBLIC_URL=/admin
 ARG REACT_APP_API_URL=http://api.knit.pk.edu.pl
 
 ENV NODE_ENV production
