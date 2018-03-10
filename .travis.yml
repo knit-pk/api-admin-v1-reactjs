@@ -10,7 +10,7 @@ cache: yarn
 
 env:
   global:
-    - PUBLIC_URL=http://knit-test-api.tk/admin-on-rest
+    - PUBLIC_URL=/admin-on-rest
 
 before_install:
   - yarn global add greenkeeper-lockfile@1
