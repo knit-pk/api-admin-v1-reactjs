@@ -9,7 +9,8 @@ services:
 cache: yarn
 
 env:
-  - PUBLIC_URL=https://knit-test-api.tk/admin-on-rest
+  global:
+    - PUBLIC_URL=http://knit-test-api.tk/admin-on-rest
 
 before_install:
   - yarn global add greenkeeper-lockfile@1
@@ -27,6 +28,7 @@ addons:
   ssh_known_hosts: s11.mydevil.net
 
 before_deploy:
+  - "export APP_VERSION=$(cat package.json | grep \"\\\"version\\\":\" | sed -E \"s/\\s+\\\"version\\\": \\\"(.*)\\\",/v\\1/\") && echo $APP_VERSION"
   - openssl aes-256-cbc -K $encrypted_48044a6e4342_key -iv $encrypted_48044a6e4342_iv -in ./deploy/mydevil_rsa.enc -out /tmp/mydevil_rsa -d
   - eval "$(ssh-agent -s)"
   - chmod 600 /tmp/mydevil_rsa
@@ -36,6 +38,11 @@ deploy:
   - provider: script
     skip_cleanup: true
     script: bash ./deploy/mydevil-deploy.sh
+    on:
+      branch: master
+  - provider: script
+    skip_cleanup: true
+    script: bash ./deploy/github-tag.sh
     on:
       branch: master
   - provider: script

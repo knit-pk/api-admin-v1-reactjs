@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env sh
 
 DOCKER_TAG=$(echo ${TRAVIS_TAG} | sed -E 's~^v(.*)~\1~')
 
