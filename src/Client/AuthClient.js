@@ -1,8 +1,7 @@
 import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from 'admin-on-rest';
 import { storeTokens, clearTokens, getRefreshToken } from '../Storage/UserToken';
 import decodeTokens from './UserTokensDecoder';
-
-const tokenLogin = `${process.env.REACT_APP_API_URL}/token`;
+import { APP_LOGIN } from '../Config';
 
 const makeLoginRequest = (url, payload) => new Request(url, {
   method: 'POST',
@@ -34,7 +33,7 @@ function authClient(type, params) { // eslint-disable-line
   switch (type) {
     case AUTH_LOGIN:
       const { username, password } = params;
-      return adminLogin(makeCredentialsLoginRequest(tokenLogin, { username, password }))
+      return adminLogin(makeCredentialsLoginRequest(APP_LOGIN, { username, password }))
         .then(storeTokens);
 
     case AUTH_LOGOUT:

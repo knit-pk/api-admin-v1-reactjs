@@ -7,8 +7,7 @@ import restClient from './Client/RestClient';
 import customSagas from './Sagas';
 import customReducers from './Reducers';
 import './App.css';
-
-const entrypoint = `${process.env.REACT_APP_API_URL}`;
+import { APP_ENTRYPOINT } from './Config';
 
 class App extends Component {
   constructor(props) {
@@ -17,7 +16,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    documentationParser(entrypoint).then(({ api }) => {
+    documentationParser(APP_ENTRYPOINT).then(({ api }) => {
       this.setState({ api });
     });
   }
