@@ -10,7 +10,7 @@ cache: yarn
 
 env:
   global:
-    - PUBLIC_URL=/admin-on-rest
+    - PUBLIC_URL=/admin
 
 before_install:
   - yarn global add greenkeeper-lockfile@1
