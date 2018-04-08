@@ -1,7 +1,7 @@
 {
   "name": "knit-api-admin",
   "description": "ApiPlatform Admin Client for KNIT Rest API",
-  "version": "0.3.1-dev",
+  "version": "0.3.2-dev",
   "homepage": "http://api.knit.pk.edu.pl/admin",
   "private": true,
   "dependencies": {
