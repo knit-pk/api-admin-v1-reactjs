@@ -1,11 +1,12 @@
 
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
-import { LongTextInput, ImageField } from 'admin-on-rest';
+import { LongTextInput, ImageField, FunctionField, ImageInput } from 'admin-on-rest';
 import { Field } from 'redux-form';
 import parseHydraDocumentation from '@api-platform/api-doc-parser/lib/hydra/parseHydraDocumentation';
 import { resolveUser } from '../Client/RestClient';
 import { storeHydraDocs, havingHydraDocs } from '../Storage/HydraDocs';
+import { APP_ENTRYPOINT } from '../Config';
 
 
 function parseHydraDocumentationForUser(jsonldEntrypoint) {
@@ -41,13 +42,71 @@ function parseHydraDocumentationCached(jsonldEntrypoint) {
         <Field name="content" component={LongTextInput} label="Content" source="content" />
       );
 
-      const images = api.resources.find(({ name }) => name === 'images');
-      const url = images.fields.find(f => f.name === 'url');
+      // render images
+      api.resources.map((resource) => {
+        if (resource.id === 'http://schema.org/ImageObject') {
+          resource.fields.map((field) => {
+            if (field.id === 'http://schema.org/contentUrl') {
+              // eslint-disable-next-line
+              field.denormalizeData = value => {
+                return {
+                  src: value,
+                };
+              };
 
-      // eslint-disable-next-line
-      url.field = props => (
-        <ImageField {...props} source="url" title="image" />
-      );
+              // eslint-disable-next-line
+              field.field = props => (
+                <FunctionField
+                  {...props}
+                  key={field.name}
+                  render={record => (
+                    <ImageField key={field.name} source={`${field.name}.src`} record={record} title="image" />
+                  )}
+                  source={field.name}
+                />
+              );
+
+              // eslint-disable-next-line
+              field.input = props => (
+                <ImageInput {...props} accept="image/*" multiple={false} source={field.name}>
+                  <ImageField {...props} source={field.name} title="image" />
+                </ImageInput>
+              );
+
+              // eslint-disable-next-line
+              field.input.defaultProps = {
+                addField: true,
+              };
+
+              // eslint-disable-next-line
+              field.normalizeData = (value) => {
+                if (value[0] && value[0].rawFile instanceof File) {
+                  const body = new FormData();
+                  body.append('image', value[0].rawFile);
+
+                  return resolveUser().then(({ authenticated, token }) => {
+                    if (!authenticated) {
+                      throw Error('User is not authenticated');
+                    }
+
+                    return fetch(`${APP_ENTRYPOINT}/images/upload`, {
+                      body,
+                      headers: new Headers({ authorization: token }),
+                      method: 'POST',
+                    }).then(response => response.json()).then(data => data.url);
+                  });
+                }
+
+                return value.src;
+              };
+            }
+
+            return field;
+          });
+        }
+
+        return resource;
+      });
 
       return { api };
     });
