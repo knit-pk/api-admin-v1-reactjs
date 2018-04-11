@@ -1,8 +1,8 @@
 import { hydraClient, fetchHydra } from '@api-platform/admin';
 import { isTokenExpired, getRefreshToken, storeTokens, makeBearerToken, getTokenPayload, getToken } from '../Storage/UserToken';
 import { adminLogin, makeRefreshTokenLoginRequest } from './AuthClient';
-
-const refreshTokenLogin = `${process.env.REACT_APP_API_URL}/token/refresh`;
+import generateUrl from '../Services/UrlGenerator';
+import { APP_REFRESH_TOKEN_PATH } from '../Config';
 
 const makeUser = () => ({
   authenticated: false,
@@ -30,7 +30,7 @@ const getUser = () => {
 
   const refreshToken = getRefreshToken();
   if (refreshToken) {
-    return adminLogin(makeRefreshTokenLoginRequest(refreshTokenLogin, refreshToken))
+    return adminLogin(makeRefreshTokenLoginRequest(generateUrl(APP_REFRESH_TOKEN_PATH), refreshToken))
       .then((tokens) => {
         storeTokens(tokens);
         return makeAuthUser({

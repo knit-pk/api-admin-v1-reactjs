@@ -6,7 +6,8 @@ import { Field } from 'redux-form';
 import parseHydraDocumentation from '@api-platform/api-doc-parser/lib/hydra/parseHydraDocumentation';
 import { resolveUser } from '../Client/RestClient';
 import { storeHydraDocs, havingHydraDocs } from '../Storage/HydraDocs';
-import { APP_ENTRYPOINT } from '../Config';
+import { SCHEMA_ID_IMAGE_OBJECT, SCHEMA_ID_CONTENT_URL } from './SchemaOrg';
+import generateUrl from '../Services/UrlGenerator';
 
 
 function parseHydraDocumentationForUser(jsonldEntrypoint) {
@@ -44,9 +45,9 @@ function parseHydraDocumentationCached(jsonldEntrypoint) {
 
       // render images
       api.resources.map((resource) => {
-        if (resource.id === 'http://schema.org/ImageObject') {
+        if (resource.id === SCHEMA_ID_IMAGE_OBJECT) {
           resource.fields.map((field) => {
-            if (field.id === 'http://schema.org/contentUrl') {
+            if (field.id === SCHEMA_ID_CONTENT_URL) {
               // eslint-disable-next-line
               field.denormalizeData = value => {
                 return {
@@ -89,7 +90,7 @@ function parseHydraDocumentationCached(jsonldEntrypoint) {
                       throw Error('User is not authenticated');
                     }
 
-                    return fetch(`${APP_ENTRYPOINT}/images/upload`, {
+                    return fetch(generateUrl('images/upload'), {
                       body,
                       headers: new Headers({ authorization: token }),
                       method: 'POST',
