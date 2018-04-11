@@ -39,7 +39,7 @@ deploy:
     skip_cleanup: true
     script: bash ./deploy/mydevil-deploy.sh
     on:
-      branch: master
+      branch: develop
   - provider: script
     skip_cleanup: true
     script: bash ./deploy/github-tag.sh
