@@ -5,14 +5,14 @@
   "homepage": "http://api.knit.pk.edu.pl/admin",
   "private": true,
   "dependencies": {
-    "@api-platform/admin": "^0.4.0",
-    "@api-platform/api-doc-parser": "^0.3.2",
-    "circular-json": "^0.5.1",
+    "@api-platform/admin": "^0.4.1",
+    "@api-platform/api-doc-parser": "^0.3.3",
+    "circular-json": "^0.5.3",
     "jwt-decode": "^2.2.0",
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2",
     "react-markdown": "^3.3.0",
-    "react-scripts": "^1.1.1"
+    "react-scripts": "^1.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -22,10 +22,10 @@
     "lint": "eslint src"
   },
   "devDependencies": {
-    "eslint": "^4.18.2",
+    "eslint": "^4.19.1",
     "eslint-config-airbnb": "^16.1.0",
-    "eslint-plugin-html": "^4.0.2",
-    "eslint-plugin-import": "^2.9.0",
+    "eslint-plugin-html": "^4.0.3",
+    "eslint-plugin-import": "^2.11.0",
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.7.0"
   }
