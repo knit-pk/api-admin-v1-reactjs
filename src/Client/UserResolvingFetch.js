@@ -1,4 +1,3 @@
-import { hydraClient, fetchHydra } from '@api-platform/admin';
 import { isTokenExpired, getRefreshToken, storeTokens, makeBearerToken, getTokenPayload, getToken } from '../Storage/UserToken';
 import { adminLogin, makeRefreshTokenLoginRequest } from './AuthClient';
 import generateUrl from '../Services/UrlGenerator';
@@ -46,12 +45,6 @@ export const getUser = () => {
   return makeUser();
 };
 
-const fetchResolvingUser = (url, options = {}) => {
-  const defaultHeaders = {
-    headers: new Headers({ Accept: 'application/ld+json' }),
-  };
+const addUserResolvingCapabilities = fetch => (url, options = {}) => Promise.resolve(getUser()).then(user => fetch(url, Object.assign({}, options, { user })));
 
-  return Promise.resolve(getUser()).then(user => fetchHydra(url, Object.assign({}, defaultHeaders, options, { user })));
-};
-
-export default api => (hydraClient(api, fetchResolvingUser));
+export default addUserResolvingCapabilities;

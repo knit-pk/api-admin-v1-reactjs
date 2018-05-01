@@ -4,9 +4,8 @@ import ReactMarkdown from 'react-markdown';
 import { LongTextInput, ImageField, ImageInput, TextField, TextInput } from 'admin-on-rest';
 import { Field } from 'redux-form';
 import parseHydraDocumentation from '@api-platform/api-doc-parser/lib/hydra/parseHydraDocumentation';
-import { getUser } from '../Client/RestClient';
+import { getUser } from '../Client/UserResolvingFetch';
 import { storeHydraDocs, havingHydraDocs } from '../Storage/HydraDocs';
-import generateUrl from '../Services/UrlGenerator';
 
 
 function parseHydraDocumentationForUser(jsonldEntrypoint) {
@@ -82,19 +81,25 @@ function parseHydraDocumentationCached(jsonldEntrypoint) {
 
       const {
         url,
+        originalName,
       } = mapBy('name', images.fields);
+
+      images.listFields = [url, originalName];
 
       url.field = props => (
         <ImageField {...props} key="url" source="url.src" title="image" />
       );
 
-      url.input = props => (
-        <ImageInput {...props} accept="image/*" multiple={false} source="url.src">
-          <ImageField {...props} source="url.src" title="image" />
-        </ImageInput>
-      );
-      url.input.defaultProps = {
-        addField: true,
+      url.input = (props) => {
+        if (props.record['@id'] !== undefined) {
+          return (<Field {...props} key="url" component={TextInput} source="url.src" name="url.src" label="Url" />);
+        }
+
+        return (
+          <Field {...props} component={ImageInput} accept="image/*" multiple={false} name="url" source="url.src">
+            <ImageField {...props} source="url.src" name="url" title="image" />
+          </Field>
+        );
       };
 
       url.denormalizeData = value => ({
@@ -102,23 +107,19 @@ function parseHydraDocumentationCached(jsonldEntrypoint) {
       });
       url.normalizeData = (value) => {
         if (value[0] && value[0].rawFile instanceof File) {
-          const body = new FormData();
-          body.append('image', value[0].rawFile);
-
-          return Promise.resolve(getUser()).then(({ authenticated, token }) => {
-            if (!authenticated) {
-              throw Error('User is not authenticated');
-            }
-
-            return fetch(generateUrl('images/upload'), {
-              body,
-              headers: new Headers({ authorization: token }),
-              method: 'POST',
-            }).then(response => response.json()).then(data => data.url);
-          });
+          return value[0].rawFile;
         }
 
         return value.src;
+      };
+      images.encodeData = (data) => {
+        if (data.url instanceof File) {
+          const body = new FormData();
+          body.set('image', data.url);
+          return body;
+        }
+
+        return JSON.stringify(data);
       };
 
       return { api };
