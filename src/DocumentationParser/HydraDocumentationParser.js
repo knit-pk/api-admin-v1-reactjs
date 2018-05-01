@@ -4,13 +4,13 @@ import ReactMarkdown from 'react-markdown';
 import { LongTextInput, ImageField, ImageInput, TextField, TextInput } from 'admin-on-rest';
 import { Field } from 'redux-form';
 import parseHydraDocumentation from '@api-platform/api-doc-parser/lib/hydra/parseHydraDocumentation';
-import { resolveUser } from '../Client/RestClient';
+import { getUser } from '../Client/RestClient';
 import { storeHydraDocs, havingHydraDocs } from '../Storage/HydraDocs';
 import generateUrl from '../Services/UrlGenerator';
 
 
 function parseHydraDocumentationForUser(jsonldEntrypoint) {
-  return resolveUser().then(({ authenticated, token }) => {
+  return Promise.resolve(getUser()).then(({ authenticated, token }) => {
     const headers = {};
     if (authenticated) {
       headers.authorization = token;
@@ -28,7 +28,7 @@ function mapBy(key, collection) {
 }
 
 function parseHydraDocumentationCached(jsonldEntrypoint) {
-  return havingHydraDocs(api => new Promise(resolve => resolve({ api })), parseHydraDocumentationForUser(jsonldEntrypoint))
+  return havingHydraDocs(api => Promise.resolve({ api }), parseHydraDocumentationForUser(jsonldEntrypoint))
     .then(({ api }) => {
       const {
         categories,
@@ -105,7 +105,7 @@ function parseHydraDocumentationCached(jsonldEntrypoint) {
           const body = new FormData();
           body.append('image', value[0].rawFile);
 
-          return resolveUser().then(({ authenticated, token }) => {
+          return Promise.resolve(getUser()).then(({ authenticated, token }) => {
             if (!authenticated) {
               throw Error('User is not authenticated');
             }
