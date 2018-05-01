@@ -1,12 +1,11 @@
 
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
-import { LongTextInput, ImageField, FunctionField, ImageInput, TextField, TextInput } from 'admin-on-rest';
+import { LongTextInput, ImageField, ImageInput, TextField, TextInput } from 'admin-on-rest';
 import { Field } from 'redux-form';
 import parseHydraDocumentation from '@api-platform/api-doc-parser/lib/hydra/parseHydraDocumentation';
 import { resolveUser } from '../Client/RestClient';
 import { storeHydraDocs, havingHydraDocs } from '../Storage/HydraDocs';
-import { SCHEMA_ID_IMAGE_OBJECT, SCHEMA_ID_CONTENT_URL } from './SchemaOrg';
 import generateUrl from '../Services/UrlGenerator';
 
 
@@ -24,15 +23,25 @@ function parseHydraDocumentationForUser(jsonldEntrypoint) {
     });
 }
 
+function mapBy(key, collection) {
+  return Object.assign({}, ...collection.map(item => ({ [item[key]]: item })));
+}
+
 function parseHydraDocumentationCached(jsonldEntrypoint) {
   return havingHydraDocs(api => new Promise(resolve => resolve({ api })), parseHydraDocumentationForUser(jsonldEntrypoint))
     .then(({ api }) => {
-      const categories = api.resources.find(({ name }) => name === 'categories');
-      const metadata = categories.fields.find(({ name }) => name === 'metadata');
-      const articlesCount = categories.fields.find(({ name }) => name === 'articlesCount');
+      const {
+        categories,
+        articles,
+        images,
+      } = mapBy('name', api.resources);
+
+      const {
+        metadata,
+        articlesCount,
+      } = mapBy('name', categories.fields);
 
       categories.listFields = categories.fields.filter(({ name }) => name !== 'metadata');
-
       articlesCount.field = props => (<TextField key="articlesCount" source="articlesCount" {...props} />);
       articlesCount.field.defaultProps = {
         addLabel: true,
@@ -44,92 +53,73 @@ function parseHydraDocumentationCached(jsonldEntrypoint) {
         <div key="metadata.description"><h5>--description</h5></div>,
         <TextField {...props} key="description" source="metadata.description" label="Metadata description" />,
       ]);
-      categories.listFields = categories.fields.filter(({ name }) => name !== 'metadata');
+      metadata.field.defaultProps = {
+        addLabel: true,
+      };
 
       metadata.input = props => ([
         <Field {...props} key="title" component={TextInput} source="metadata.title" name="metadata.title" label="Metadata title" />,
         <Field {...props} key="description" component={TextInput} source="metadata.description" name="metadata.description" label="Metadata description" />,
       ]);
 
-      metadata.field.defaultProps = {
-        addLabel: true,
-      };
+      const {
+        content,
+        title,
+        commentsCount,
+      } = mapBy('name', articles.fields);
 
-      const articles = api.resources.find(({ name }) => name === 'articles');
-      const content = articles.fields.find(({ name }) => name === 'content');
-      const title = articles.fields.find(({ name }) => name === 'title');
-      const commentsCount = articles.fields.find(({ name }) => name === 'commentsCount');
 
+      articles.listFields = [title, commentsCount];
       commentsCount.field = props => (<TextField key="commentsCount" source="commentsCount" {...props} />);
       commentsCount.field.defaultProps = {
         addLabel: true,
       };
 
-      articles.listFields = [title, commentsCount];
-
       content.field = props => (<ReactMarkdown {...props} source={props.record.content} />);
-
       content.input = props => (
         <Field {...props} name="content" component={LongTextInput} label="Content" source="content" />
       );
 
-      api.resources.map((resource) => {
-        if (resource.id === SCHEMA_ID_IMAGE_OBJECT) {
-          resource.fields.map((field) => {
-            if (field.id === SCHEMA_ID_CONTENT_URL) {
-              field.denormalizeData = value => ({
-                src: value,
-              });
+      const {
+        url,
+      } = mapBy('name', images.fields);
 
-              field.field = props => (
-                <FunctionField
-                  {...props}
-                  key={field.name}
-                  render={record => (
-                    <ImageField key={field.name} source={`${field.name}.src`} record={record} title="image" />
-                  )}
-                  source={field.name}
-                />
-              );
+      url.field = props => (
+        <ImageField {...props} key="url" source="url.src" title="image" />
+      );
 
-              field.input = props => (
-                <ImageInput {...props} accept="image/*" multiple={false} source={field.name}>
-                  <ImageField {...props} source={field.name} title="image" />
-                </ImageInput>
-              );
+      url.input = props => (
+        <ImageInput {...props} accept="image/*" multiple={false} source="url.src">
+          <ImageField {...props} source="url.src" title="image" />
+        </ImageInput>
+      );
+      url.input.defaultProps = {
+        addField: true,
+      };
 
-              field.input.defaultProps = {
-                addField: true,
-              };
+      url.denormalizeData = value => ({
+        src: value,
+      });
+      url.normalizeData = (value) => {
+        if (value[0] && value[0].rawFile instanceof File) {
+          const body = new FormData();
+          body.append('image', value[0].rawFile);
 
-              field.normalizeData = (value) => {
-                if (value[0] && value[0].rawFile instanceof File) {
-                  const body = new FormData();
-                  body.append('image', value[0].rawFile);
-
-                  return resolveUser().then(({ authenticated, token }) => {
-                    if (!authenticated) {
-                      throw Error('User is not authenticated');
-                    }
-
-                    return fetch(generateUrl('images/upload'), {
-                      body,
-                      headers: new Headers({ authorization: token }),
-                      method: 'POST',
-                    }).then(response => response.json()).then(data => data.url);
-                  });
-                }
-
-                return value.src;
-              };
+          return resolveUser().then(({ authenticated, token }) => {
+            if (!authenticated) {
+              throw Error('User is not authenticated');
             }
 
-            return field;
+            return fetch(generateUrl('images/upload'), {
+              body,
+              headers: new Headers({ authorization: token }),
+              method: 'POST',
+            }).then(response => response.json()).then(data => data.url);
           });
         }
 
-        return resource;
-      });
+        return value.src;
+      };
 
       return { api };
     });
