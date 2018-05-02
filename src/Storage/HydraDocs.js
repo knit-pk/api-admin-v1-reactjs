@@ -74,7 +74,7 @@ function makeResources(resources) {
   });
 
   // Resolve references
-  for (let field of fields) { // eslint-disable-line
+  for (const field of fields) { // eslint-disable-line
     if (field.reference !== null) {
       field.reference = resourcesById.has(field.reference) ? resourcesById.get(field.reference) : null;
     }

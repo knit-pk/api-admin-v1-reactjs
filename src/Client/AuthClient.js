@@ -1,18 +1,18 @@
 import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from 'admin-on-rest';
 import { storeTokens, clearTokens, getRefreshToken } from '../Storage/UserToken';
-import decodeTokens from './UserTokensDecoder';
+import decodeTokens from '../Services/UserTokensDecoder';
 import { APP_LOGIN_PATH } from '../Config';
 import generateUrl from '../Services/UrlGenerator';
 
-const makeLoginRequest = (url, payload) => new Request(url, {
+const makeLoginRequest = (path, payload) => new Request(generateUrl(path), {
   method: 'POST',
   body: JSON.stringify(payload),
   headers: new Headers({ 'Content-Type': 'application/json' }),
 });
 
-export const makeRefreshTokenLoginRequest = (url, refreshToken) => makeLoginRequest(url, { refresh_token: refreshToken });
+export const makeRefreshTokenLoginRequest = (path, refreshToken) => makeLoginRequest(path, { refresh_token: refreshToken });
 
-export const makeCredentialsLoginRequest = (url, { username, password }) => makeLoginRequest(url, { username, password });
+export const makeCredentialsLoginRequest = (path, { username, password }) => makeLoginRequest(path, { username, password });
 
 export const adminLogin = request => fetch(request)
   .then((response) => {
@@ -22,7 +22,8 @@ export const adminLogin = request => fetch(request)
     return response;
   })
   .then(response => response.json())
-  .then(decodeTokens);
+  .then(decodeTokens)
+  .then(storeTokens);
 
 /**
  * Authentication client
@@ -34,8 +35,7 @@ function authClient(type, params) { // eslint-disable-line
   switch (type) {
     case AUTH_LOGIN:
       const { username, password } = params;
-      return adminLogin(makeCredentialsLoginRequest(generateUrl(APP_LOGIN_PATH), { username, password }))
-        .then(storeTokens);
+      return adminLogin(makeCredentialsLoginRequest(APP_LOGIN_PATH, { username, password }));
 
     case AUTH_LOGOUT:
       clearTokens();

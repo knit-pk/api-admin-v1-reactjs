@@ -4,18 +4,19 @@ import ReactMarkdown from 'react-markdown';
 import { LongTextInput, ImageField, ImageInput, TextField, TextInput } from 'admin-on-rest';
 import { Field } from 'redux-form';
 import parseHydraDocumentation from '@api-platform/api-doc-parser/lib/hydra/parseHydraDocumentation';
-import { getUser } from '../Client/UserResolvingFetch';
+import resolveUser from '../Services/UserResolver';
 import { storeHydraDocs, havingHydraDocs } from '../Storage/HydraDocs';
 
 
 function parseHydraDocumentationForUser(jsonldEntrypoint) {
-  return Promise.resolve(getUser()).then(({ authenticated, token }) => {
-    const headers = {};
-    if (authenticated) {
-      headers.authorization = token;
-    }
-    return new Headers(headers);
-  }).then(headers => parseHydraDocumentation(jsonldEntrypoint, { headers }))
+  return resolveUser()
+    .then(({ authenticated, token }) => {
+      const headers = {};
+      if (authenticated) {
+        headers.authorization = token;
+      }
+      return new Headers(headers);
+    }).then(headers => parseHydraDocumentation(jsonldEntrypoint, { headers }))
     .then(({ api }) => {
       storeHydraDocs(api);
       return { api };
