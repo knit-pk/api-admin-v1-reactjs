@@ -2,12 +2,12 @@
 # yarn lockfile v1
 
 
-"@api-platform/admin@^0.4.1":
+"@api-platform/admin@k911/admin#encode-data":
   version "0.4.1"
-  resolved "https://registry.yarnpkg.com/@api-platform/admin/-/admin-0.4.1.tgz#f54cb46416681872a59689efa496241839576775"
+  resolved "https://codeload.github.com/k911/admin/tar.gz/6d9fd205ef3b56e953cd4a334fc5443dc95c9665"
   dependencies:
     "@api-platform/api-doc-parser" "^0.3.2"
-    admin-on-rest "^1.4"
+    admin-on-rest "^1.4.1"
     babel-runtime "^6.23"
     jsonld "^0.4"
     lodash.isplainobject "^4.0.6"
@@ -71,7 +71,7 @@ address@1.0.3, address@^1.0.1:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/address/-/address-1.0.3.tgz#b5f50631f8d6cec8bd20c963963afb55e06cbce9"
 
-admin-on-rest@^1.4:
+admin-on-rest@^1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/admin-on-rest/-/admin-on-rest-1.4.1.tgz#0a37f76b098fe15d8e8b01705f787d4f58bdf8a2"
   dependencies:
