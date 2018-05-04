@@ -1,37 +1,71 @@
 
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
-import { LongTextInput, ImageField, FunctionField, ImageInput, TextField, TextInput } from 'admin-on-rest';
+import { LongTextInput, ImageField, ImageInput, TextField, TextInput } from 'admin-on-rest';
 import { Field } from 'redux-form';
 import parseHydraDocumentation from '@api-platform/api-doc-parser/lib/hydra/parseHydraDocumentation';
-import { resolveUser } from '../Client/RestClient';
+import resolveUser from '../Services/UserResolver';
 import { storeHydraDocs, havingHydraDocs } from '../Storage/HydraDocs';
-import { APP_ENTRYPOINT } from '../Config';
-
 
 function parseHydraDocumentationForUser(jsonldEntrypoint) {
-  return resolveUser().then(({ authenticated, token }) => {
-    const headers = {};
-    if (authenticated) {
-      headers.authorization = token;
-    }
-    return new Headers(headers);
-  }).then(headers => parseHydraDocumentation(jsonldEntrypoint, { headers }))
+  return resolveUser()
+    .then(({ authenticated, token }) => {
+      const headers = {};
+      if (authenticated) {
+        headers.authorization = token;
+      }
+      return new Headers(headers);
+    }).then(headers => parseHydraDocumentation(jsonldEntrypoint, { headers }))
     .then(({ api }) => {
       storeHydraDocs(api);
       return { api };
     });
 }
 
+function mapBy(key, collection) {
+  return Object.assign({}, ...collection.map(item => ({ [item[key]]: item })));
+}
+
 function parseHydraDocumentationCached(jsonldEntrypoint) {
-  return havingHydraDocs(api => new Promise(resolve => resolve({ api })), parseHydraDocumentationForUser(jsonldEntrypoint))
+  return havingHydraDocs(api => Promise.resolve({ api }), parseHydraDocumentationForUser(jsonldEntrypoint))
     .then(({ api }) => {
-      const categories = api.resources.find(({ name }) => name === 'categories');
-      const metadata = categories.fields.find(({ name }) => name === 'metadata');
-      const articlesCount = categories.fields.find(({ name }) => name === 'articlesCount');
+      const {
+        categories,
+        articles,
+        images,
+        comments,
+        comment_replies: commentReplies,
+      } = mapBy('name', api.resources);
+
+      const {
+        text,
+        article,
+        author,
+      } = mapBy('name', comments.fields);
+      comments.listFields = [text, author, article];
+      comments.listProps = {
+        addIdField: false,
+      };
+
+      const {
+        text: replyText,
+        comment: replyComment,
+        author: replyAuthor,
+      } = mapBy('name', commentReplies.fields);
+      commentReplies.listFields = [replyText, replyComment, replyAuthor];
+      commentReplies.listProps = {
+        addIdField: false,
+      };
+
+      const {
+        metadata,
+        articlesCount,
+      } = mapBy('name', categories.fields);
 
       categories.listFields = categories.fields.filter(({ name }) => name !== 'metadata');
-
+      categories.listProps = {
+        addIdField: false,
+      };
       articlesCount.field = props => (<TextField key="articlesCount" source="articlesCount" {...props} />);
       articlesCount.field.defaultProps = {
         addLabel: true,
@@ -43,92 +77,89 @@ function parseHydraDocumentationCached(jsonldEntrypoint) {
         <div key="metadata.description"><h5>--description</h5></div>,
         <TextField {...props} key="description" source="metadata.description" label="Metadata description" />,
       ]);
-      categories.listFields = categories.fields.filter(({ name }) => name !== 'metadata');
+      metadata.field.defaultProps = {
+        addLabel: true,
+      };
 
       metadata.input = props => ([
         <Field {...props} key="title" component={TextInput} source="metadata.title" name="metadata.title" label="Metadata title" />,
         <Field {...props} key="description" component={TextInput} source="metadata.description" name="metadata.description" label="Metadata description" />,
       ]);
 
-      metadata.field.defaultProps = {
-        addLabel: true,
-      };
+      const {
+        content,
+        title,
+        commentsCount,
+      } = mapBy('name', articles.fields);
 
-      const articles = api.resources.find(({ name }) => name === 'articles');
-      const content = articles.fields.find(({ name }) => name === 'content');
-      const title = articles.fields.find(({ name }) => name === 'title');
-      const commentsCount = articles.fields.find(({ name }) => name === 'commentsCount');
 
+      articles.listFields = [title, commentsCount];
       commentsCount.field = props => (<TextField key="commentsCount" source="commentsCount" {...props} />);
       commentsCount.field.defaultProps = {
         addLabel: true,
       };
 
-      articles.listFields = [title, commentsCount];
-
       content.field = props => (<ReactMarkdown {...props} source={props.record.content} />);
-
       content.input = props => (
         <Field {...props} name="content" component={LongTextInput} label="Content" source="content" />
       );
 
-      api.resources.map((resource) => {
-        if (resource.id === 'http://schema.org/ImageObject') {
-          resource.fields.map((field) => {
-            if (field.id === 'http://schema.org/contentUrl') {
-              field.denormalizeData = value => ({
-                src: value,
-              });
+      const {
+        url,
+        originalName,
+      } = mapBy('name', images.fields);
 
-              field.field = props => (
-                <FunctionField
-                  {...props}
-                  key={field.name}
-                  render={record => (
-                    <ImageField key={field.name} source={`${field.name}.src`} record={record} title="image" />
-                  )}
-                  source={field.name}
-                />
-              );
+      images.listFields = [url, originalName];
+      images.listProps = {
+        addIdField: false,
+      };
 
-              field.input = props => (
-                <ImageInput {...props} accept="image/*" multiple={false} source={field.name}>
-                  <ImageField {...props} source={field.name} title="image" />
-                </ImageInput>
-              );
+      url.field = props => (<ImageField {...props} key="url" source="url.src" title="image" name="url" label="Image" />);
+      url.field.defaultProps = {
+        addLabel: true,
+      };
 
-              field.input.defaultProps = {
-                addField: true,
-              };
-
-              field.normalizeData = (value) => {
-                if (value[0] && value[0].rawFile instanceof File) {
-                  const body = new FormData();
-                  body.append('image', value[0].rawFile);
-
-                  return resolveUser().then(({ authenticated, token }) => {
-                    if (!authenticated) {
-                      throw Error('User is not authenticated');
-                    }
-
-                    return fetch(`${APP_ENTRYPOINT}/images/upload`, {
-                      body,
-                      headers: new Headers({ authorization: token }),
-                      method: 'POST',
-                    }).then(response => response.json()).then(data => data.url);
-                  });
-                }
-
-                return value.src;
-              };
-            }
-
-            return field;
-          });
+      url.input = (props) => {
+        if (props.record['@id'] !== undefined) {
+          return (<Field {...props} key="url" component={TextInput} source="url.src" name="url.src" label="Url" />);
         }
 
-        return resource;
+        return ([
+          <Field
+            {...props}
+            key="url.image"
+            component={ImageInput}
+            accept="image/*"
+            multiple={false}
+            name="url.image"
+            source="url.src"
+            placeholder={<p>Drop a picture to upload, or click to select it. When you do not want to upload an image use fields bellow.</p>}
+          >
+            <ImageField {...props} source="url.src" title="image" />
+          </Field>,
+          <Field {...props} key="url.src" component={TextInput} source="url.src" name="url.src" label="Url" />,
+        ]);
+      };
+
+      url.denormalizeData = value => ({
+        src: value,
       });
+      url.normalizeData = (value) => {
+        if (value.image && value.image[0] && value.image[0].rawFile instanceof File) {
+          return value.image[0].rawFile;
+        }
+
+        return value.src;
+      };
+      images.encodeData = (data) => {
+        if (data.url instanceof File) {
+          const body = new FormData();
+          body.set('image', data.url);
+          return body;
+        }
+
+        return JSON.stringify(data);
+      };
 
       return { api };
     });

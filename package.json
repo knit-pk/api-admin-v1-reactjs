@@ -1,11 +1,11 @@
 {
   "name": "knit-api-admin",
   "description": "ApiPlatform Admin Client for KNIT Rest API",
-  "version": "0.3.4-dev",
+  "version": "0.3.5-dev",
   "homepage": "http://api.knit.pk.edu.pl/admin",
   "private": true,
   "dependencies": {
-    "@api-platform/admin": "^0.4.1",
+    "@api-platform/admin": "k911/admin#encode-data",
     "@api-platform/api-doc-parser": "^0.3.3",
     "circular-json": "^0.5.3",
     "jwt-decode": "^2.2.0",
@@ -28,5 +28,9 @@
     "eslint-plugin-import": "^2.11.0",
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.7.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/k911/admin"
   }
 }

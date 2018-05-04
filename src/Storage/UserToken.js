@@ -23,8 +23,7 @@ export const storeTokens = ({ token, refreshToken, payload }) => {
   localStorage.setItem('token', token);
   localStorage.setItem('refresh_token', refreshToken);
   localStorage.setItem('token_payload', JSON.stringify(payload));
+  return { token, refreshToken, payload };
 };
-
-export const storeRefreshToken = refreshToken => localStorage.setItem('refresh_token', refreshToken);
 
 export const clearTokens = () => removeItems('token', 'refresh_token', 'token_payload');
