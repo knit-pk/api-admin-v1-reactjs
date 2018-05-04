@@ -1,13 +1,17 @@
 import React, { Component } from 'react';
-import { AdminBuilder } from '@api-platform/admin';
+import { AdminBuilder, hydraClient, fetchHydra } from '@api-platform/admin';
 import Dashboard from './Dashboard/Dashboard';
 import documentationParser from './DocumentationParser/HydraDocumentationParser';
 import authClient from './Client/AuthClient';
-import restClient from './Client/RestClient';
 import customSagas from './Sagas';
 import customReducers from './Reducers';
+import addUserResolvingCapabilities from './Client/UserResolvingFetch';
+import addImageUploadCapabilities from './Client/ImageHandlingFetch';
 import './App.css';
 import { APP_ENTRYPOINT } from './Config';
+
+const hydraFetch = addImageUploadCapabilities(addUserResolvingCapabilities(fetchHydra));
+const hydraClientFactory = api => (hydraClient(api, hydraFetch));
 
 class App extends Component {
   constructor(props) {
@@ -33,7 +37,7 @@ class App extends Component {
       api={this.state.api}
       title="KNIT Admin"
       authClient={authClient}
-      restClient={restClient(this.state.api)}
+      restClient={hydraClientFactory(this.state.api)}
     />);
   }
 }
