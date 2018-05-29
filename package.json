@@ -6,7 +6,7 @@
   "private": true,
   "dependencies": {
     "@api-platform/admin": "k911/admin#encode-data",
-    "@api-platform/api-doc-parser": "^0.3.3",
+    "@api-platform/api-doc-parser": "^0.4.0",
     "circular-json": "^0.5.3",
     "jwt-decode": "^2.2.0",
     "react": "^16.3.2",
