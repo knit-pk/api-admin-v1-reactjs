@@ -1,8 +1,5 @@
 language: node_js
 
-node_js:
-  - '9'
-
 services:
   - docker
 
@@ -12,7 +9,15 @@ env:
   global:
     - PUBLIC_URL=/admin
 
+matrix:
+  include:
+    - node_js: '9'
+      env:
+        - DEPLOY=1
+    - node_js: '10'
+
 before_install:
+  - npm install yarn -g
   - yarn global add greenkeeper-lockfile@1
 
 before_script:
@@ -45,13 +50,16 @@ deploy:
     script: bash ./deploy/mydevil-deploy.sh
     on:
       branch: develop
+      condition: $DEPLOY = 1
   - provider: script
     skip_cleanup: true
     script: bash ./deploy/github-tag.sh
     on:
       branch: master
+      condition: $DEPLOY = 1
   - provider: script
     skip_cleanup: true
     script: bash ./deploy/docker-app-push.sh
     on:
       tags: true
+      condition: $DEPLOY = 1
