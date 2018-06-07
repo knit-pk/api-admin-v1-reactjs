@@ -1,7 +1,7 @@
 
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
-import { LongTextInput, ImageField, ImageInput, TextField, TextInput } from 'admin-on-rest';
+import { LongTextInput, ImageField, ImageInput, TextField, TextInput } from 'react-admin';
 import { Field } from 'redux-form';
 import parseHydraDocumentation from '@api-platform/api-doc-parser/lib/hydra/parseHydraDocumentation';
 import resolveUser from '../Services/UserResolver';
@@ -133,6 +133,7 @@ function parseHydraDocumentationCached(jsonldEntrypoint) {
             multiple={false}
             name="url.image"
             source="url.src"
+            label="Image"
             placeholder={<p>Drop a picture to upload, or click to select it. When you do not want to upload an image use fields bellow.</p>}
           >
             <ImageField {...props} source="url.src" title="image" />
@@ -141,16 +142,8 @@ function parseHydraDocumentationCached(jsonldEntrypoint) {
         ]);
       };
 
-      url.denormalizeData = value => ({
-        src: value,
-      });
-      url.normalizeData = (value) => {
-        if (value.image && value.image[0] && value.image[0].rawFile instanceof File) {
-          return value.image[0].rawFile;
-        }
-
-        return value.src;
-      };
+      url.denormalizeData = value => ({ src: value });
+      url.normalizeData = ({ image, src }) => ((image && image.rawFile instanceof File) ? image.rawFile : src);
       images.encodeData = (data) => {
         if (data.url instanceof File) {
           const body = new FormData();

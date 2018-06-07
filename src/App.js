@@ -36,8 +36,8 @@ class App extends Component {
       customReducers={customReducers}
       api={this.state.api}
       title="KNIT Admin"
-      authClient={authClient}
-      restClient={hydraClientFactory(this.state.api)}
+      authProvider={authClient}
+      dataProvider={hydraClientFactory(this.state.api)}
     />);
   }
 }

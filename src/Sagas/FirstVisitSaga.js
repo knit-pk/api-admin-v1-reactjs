@@ -1,6 +1,6 @@
 import { put, takeEvery, select } from 'redux-saga/effects';
-import { showNotification } from 'admin-on-rest';
-import { USER_LOGIN_SUCCESS } from 'admin-on-rest/lib/actions/authActions';
+import { showNotification } from 'react-admin';
+import { USER_LOGIN_SUCCESS } from 'ra-core';
 import { hydraRefreshMetadata } from '../Actions/HydraActions';
 
 const isFirstVisitOfUser = state => state.user.firstVisit;
