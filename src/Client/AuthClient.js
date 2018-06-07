@@ -1,4 +1,4 @@
-import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from 'admin-on-rest';
+import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR, AUTH_CHECK } from 'react-admin';
 import { storeTokens, clearTokens, getRefreshToken } from '../Storage/UserToken';
 import decodeTokens from '../Services/UserTokensDecoder';
 import { APP_LOGIN_PATH } from '../Config';
