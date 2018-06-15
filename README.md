@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/knit-pk/api-admin-v1-reactjs.svg?branch=master)](https://travis-ci.org/knit-pk/api-admin-v1-reactjs)
 [![Greenkeeper badge](https://badges.greenkeeper.io/knit-pk/api-admin-v1-reactjs.svg)](https://greenkeeper.io/)
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app).
 
