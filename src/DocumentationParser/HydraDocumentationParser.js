@@ -1,7 +1,9 @@
 
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
-import { LongTextInput, ImageField, ImageInput, TextField, TextInput } from 'react-admin';
+import {
+  LongTextInput, ImageField, ImageInput, TextField, TextInput,
+} from 'react-admin';
 import { Field } from 'redux-form';
 import parseHydraDocumentation from '@api-platform/api-doc-parser/lib/hydra/parseHydraDocumentation';
 import resolveUser from '../Services/UserResolver';
@@ -72,7 +74,7 @@ function parseHydraDocumentationCached(jsonldEntrypoint) {
       };
 
       metadata.field = props => ([
-        <div key="metadata.title"><h5>--title</h5></div>,
+        <div key="metadata.title"><h5>title</h5></div>,
         <TextField {...props} key="title" source="metadata.title" label="Metadata title" name="metadata.title" />,
         <div key="metadata.description"><h5>--description</h5></div>,
         <TextField {...props} key="description" source="metadata.description" label="Metadata description" />,
