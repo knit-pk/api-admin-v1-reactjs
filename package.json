@@ -9,6 +9,7 @@
     "@api-platform/api-doc-parser": "^0.4.0",
     "@iktakahiro/markdown-it-katex": "^3.0.3",
     "circular-json": "^0.5.4",
+    "highlightjs": "^9.10.0",
     "jwt-decode": "^2.2.0",
     "markdown-it": "^8.4.1",
     "react": "~16.3.0",
