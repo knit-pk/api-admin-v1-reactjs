@@ -21,4 +21,7 @@ rules:
   react/jsx-filename-extension: off
   react/display-name: off
   react/prop-types: off
+  react/destructuring-assignment: off
+  react/jsx-one-expression-per-line: off
+  jsx-a11y/heading-has-content: off
   no-param-reassign: off

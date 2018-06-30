@@ -1,4 +1,6 @@
-import { isTokenExpired, getRefreshToken, makeBearerToken, getTokenPayload, getToken } from '../Storage/UserToken';
+import {
+  isTokenExpired, getRefreshToken, makeBearerToken, getTokenPayload, getToken,
+} from '../Storage/UserToken';
 import { adminLogin, makeRefreshTokenLoginRequest } from '../Client/AuthClient';
 import { APP_REFRESH_TOKEN_PATH } from '../Config';
 

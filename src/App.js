@@ -30,15 +30,17 @@ class App extends Component {
       return <div>Loading...</div>;
     }
 
-    return (<AdminBuilder
-      dashboard={Dashboard}
-      customSagas={customSagas}
-      customReducers={customReducers}
-      api={this.state.api}
-      title="KNIT Admin"
-      authProvider={authClient}
-      dataProvider={hydraClientFactory(this.state.api)}
-    />);
+    return (
+      <AdminBuilder
+        dashboard={Dashboard}
+        customSagas={customSagas}
+        customReducers={customReducers}
+        api={this.state.api}
+        title="KNIT Admin"
+        authProvider={authClient}
+        dataProvider={hydraClientFactory(this.state.api)}
+      />
+    );
   }
 }
 
