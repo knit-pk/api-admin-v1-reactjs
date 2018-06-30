@@ -1,11 +1,11 @@
 
 import React from 'react';
-import ReactMarkdown from 'react-markdown';
 import {
   LongTextInput, ImageField, ImageInput, TextField, TextInput,
 } from 'react-admin';
 import { Field } from 'redux-form';
 import parseHydraDocumentation from '@api-platform/api-doc-parser/lib/hydra/parseHydraDocumentation';
+import Markdown from './Markdown';
 import resolveUser from '../Services/UserResolver';
 import { storeHydraDocs, havingHydraDocs } from '../Storage/HydraDocs';
 
@@ -101,7 +101,7 @@ function parseHydraDocumentationCached(jsonldEntrypoint) {
         addLabel: true,
       };
 
-      content.field = props => (<ReactMarkdown {...props} source={props.record.content} />);
+      content.field = props => (<Markdown {...props} source={props.record.content} />);
       content.input = props => (
         <Field {...props} name="content" component={LongTextInput} label="Content" source="content" />
       );
