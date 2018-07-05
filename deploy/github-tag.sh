@@ -16,5 +16,6 @@ git tag ${APP_VERSION}
 
 git remote add authorized https://travis:${GH_TOKEN}@github.com/knit-pk/api-admin-v1-reactjs.git
 git push authorized HEAD:master --tags
+git push authorized HEAD:develop
 
 conventional-github-releaser -p angular -t ${GH_TOKEN}
