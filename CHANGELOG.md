@@ -1,3 +1,20 @@
+<a name="0.4.1-dev"></a>
+## [0.4.1-dev](https://github.com/knit-pk/api-admin-v1-reactjs/compare/v0.4.0-dev...v0.4.1-dev) (2018-07-05)
+
+
+### Bug Fixes
+
+* **markdown:** Fix markdown rendering without highlight.js ([7764a4d](https://github.com/knit-pk/api-admin-v1-reactjs/commit/7764a4d))
+* **style:** Fix code style ([556b514](https://github.com/knit-pk/api-admin-v1-reactjs/commit/556b514))
+
+
+### Features
+
+* **latex:** Add LaTeX support for Markdown rendering ([2534fbb](https://github.com/knit-pk/api-admin-v1-reactjs/commit/2534fbb))
+* **markdown:** Use syntax highlighting with One Dark style ([c585f5b](https://github.com/knit-pk/api-admin-v1-reactjs/commit/c585f5b))
+
+
+
 <a name="0.4.0-dev"></a>
 # [0.4.0-dev](https://github.com/knit-pk/api-admin-v1-reactjs/compare/v0.3.5-dev...v0.4.0-dev) (2018-06-16)
 
