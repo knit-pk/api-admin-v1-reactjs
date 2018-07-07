@@ -1,3 +1,8 @@
+<a name="0.4.2-dev"></a>
+## [0.4.2-dev](https://github.com/knit-pk/api-admin-v1-reactjs/compare/v0.4.1-dev...v0.4.2-dev) (2018-07-07)
+
+
+
 <a name="0.4.1-dev"></a>
 ## [0.4.1-dev](https://github.com/knit-pk/api-admin-v1-reactjs/compare/v0.4.0-dev...v0.4.1-dev) (2018-07-05)
 
