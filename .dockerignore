@@ -1,4 +1,5 @@
-deploy/
-node_modules/
-tests/
-build/
+*
+!/src
+!/public
+!package.json
+!yarn.lock

@@ -1,0 +1,11 @@
+version: '3.6'
+services:
+    api-admin:
+        image: knitpk/api-admin:latest
+        build:
+            context: .
+            cache_from:
+                - knitpk/api-admin:latest
+            args:
+                - APP_PUBLIC_URL='/admin'
+                - APP_API_URL='localhost'
