@@ -4,7 +4,7 @@ import {
   Edit, SimpleForm, DisabledInput, Show, SimpleShowLayout, LongTextInput, ImageField, ImageInput, TextField, TextInput,
 } from 'react-admin';
 import { Field } from 'redux-form';
-import { ColorField, ColorInput } from 'react-admin-color-input';
+import { ColorInput } from 'react-admin-color-input';
 import parseHydraDocumentation from '@api-platform/api-doc-parser/lib/hydra/parseHydraDocumentation';
 import Markdown from './Markdown';
 import resolveUser from '../Services/UserResolver';
@@ -66,16 +66,12 @@ function parseHydraDocumentationCached(jsonldEntrypoint) {
         description: categoryDescription,
         image: categoryImage,
         articlesCount: categoryArticlesCount,
+        overlayColor: categoryOverlayColor,
       } = mapBy('name', categories.fields);
 
       categories.listFields = categories.fields.filter(({ name }) => name !== 'metadata');
       categories.listProps = {
         addIdField: false,
-      };
-
-      categoryArticlesCount.field = props => (<TextField key="articlesCount" source="articlesCount" {...props} />);
-      categoryArticlesCount.field.defaultProps = {
-        addLabel: true,
       };
 
       categories.show = props => (
@@ -89,7 +85,7 @@ function parseHydraDocumentationCached(jsonldEntrypoint) {
             <TextField source="metadata.description" label="Metadata description" />
             {props.options.fieldFactory(categoryImage)}
             {props.options.fieldFactory(categoryArticlesCount)}
-            <ColorField source="overlayColor" />
+            {props.options.fieldFactory(categoryOverlayColor)}
           </SimpleShowLayout>
         </Show>
       );
