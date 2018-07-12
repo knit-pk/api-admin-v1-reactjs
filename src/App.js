@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  AdminBuilder, hydraClient, fetchHydra, fieldFactory as adminFieldFactory,
+  AdminBuilder, hydraClient, fetchHydra, fieldFactory as adminFieldFactory, inputFactory as adminInputFactory,
 } from '@api-platform/admin';
 import Dashboard from './Dashboard/Dashboard';
 import documentationParser from './DocumentationParser/HydraDocumentationParser';
@@ -10,12 +10,14 @@ import customReducers from './Reducers';
 import addUserResolvingCapabilities from './Client/UserResolvingFetch';
 import addImageUploadCapabilities from './Client/ImageHandlingFetch';
 import customizeAdminFieldFactory from './Services/AdminFieldFactory';
+import customizeAdminInputFactory from './Services/AdminInputFactory';
 import './App.css';
 import { APP_ENTRYPOINT } from './Config';
 
 const hydraFetch = addImageUploadCapabilities(addUserResolvingCapabilities(fetchHydra));
 const hydraClientFactory = api => (hydraClient(api, hydraFetch));
 const fieldFactory = customizeAdminFieldFactory(adminFieldFactory);
+const inputFactory = customizeAdminInputFactory(adminInputFactory);
 
 class App extends Component {
   constructor(props) {
@@ -44,6 +46,7 @@ class App extends Component {
         authProvider={authClient}
         dataProvider={hydraClientFactory(this.state.api)}
         fieldFactory={fieldFactory}
+        inputFactory={inputFactory}
       />
     );
   }

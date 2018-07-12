@@ -4,7 +4,6 @@ import {
   Edit, SimpleForm, DisabledInput, Show, SimpleShowLayout, LongTextInput, ImageField, ImageInput, TextField, TextInput,
 } from 'react-admin';
 import { Field } from 'redux-form';
-import { ColorInput } from 'react-admin-color-input';
 import parseHydraDocumentation from '@api-platform/api-doc-parser/lib/hydra/parseHydraDocumentation';
 import Markdown from './Markdown';
 import resolveUser from '../Services/UserResolver';
@@ -95,13 +94,12 @@ function parseHydraDocumentationCached(jsonldEntrypoint) {
           <SimpleForm>
             <DisabledInput source="id" />
             <DisabledInput source="code" />
-            {props.options.inputFactory(categoryName)}
             {props.options.inputFactory(categoryDescription)}
             <TextInput source="metadata.title" label="Metadata title" />
             <TextInput source="metadata.description" label="Metadata description" />
             {props.options.inputFactory(categoryImage)}
             {props.options.inputFactory(categoryArticlesCount)}
-            <ColorInput source="overlayColor" />
+            {props.options.inputFactory(categoryOverlayColor)}
           </SimpleForm>
         </Edit>
       );
