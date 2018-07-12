@@ -1,9 +1,10 @@
 
 import React from 'react';
 import {
-  LongTextInput, ImageField, ImageInput, TextField, TextInput,
+  Edit, SimpleForm, DisabledInput, Show, SimpleShowLayout, LongTextInput, ImageField, ImageInput, TextField, TextInput,
 } from 'react-admin';
 import { Field } from 'redux-form';
+import { ColorField, ColorInput } from 'react-admin-color-input';
 import parseHydraDocumentation from '@api-platform/api-doc-parser/lib/hydra/parseHydraDocumentation';
 import Markdown from './Markdown';
 import resolveUser from '../Services/UserResolver';
@@ -60,33 +61,54 @@ function parseHydraDocumentationCached(jsonldEntrypoint) {
       };
 
       const {
-        metadata,
-        articlesCount,
+        code: categoryCode,
+        name: categoryName,
+        description: categoryDescription,
+        image: categoryImage,
+        articlesCount: categoryArticlesCount,
       } = mapBy('name', categories.fields);
 
       categories.listFields = categories.fields.filter(({ name }) => name !== 'metadata');
       categories.listProps = {
         addIdField: false,
       };
-      articlesCount.field = props => (<TextField key="articlesCount" source="articlesCount" {...props} />);
-      articlesCount.field.defaultProps = {
+
+      categoryArticlesCount.field = props => (<TextField key="articlesCount" source="articlesCount" {...props} />);
+      categoryArticlesCount.field.defaultProps = {
         addLabel: true,
       };
 
-      metadata.field = props => ([
-        <div key="metadata.title"><h5>title</h5></div>,
-        <TextField {...props} key="title" source="metadata.title" label="Metadata title" name="metadata.title" />,
-        <div key="metadata.description"><h5>--description</h5></div>,
-        <TextField {...props} key="description" source="metadata.description" label="Metadata description" />,
-      ]);
-      metadata.field.defaultProps = {
-        addLabel: true,
-      };
+      categories.show = props => (
+        <Show {...props}>
+          <SimpleShowLayout>
+            <TextField source="id" />
+            {props.options.fieldFactory(categoryCode)}
+            {props.options.fieldFactory(categoryName)}
+            {props.options.fieldFactory(categoryDescription)}
+            <TextField source="metadata.title" label="Metadata title" />
+            <TextField source="metadata.description" label="Metadata description" />
+            {props.options.fieldFactory(categoryImage)}
+            {props.options.fieldFactory(categoryArticlesCount)}
+            <ColorField source="overlayColor" />
+          </SimpleShowLayout>
+        </Show>
+      );
 
-      metadata.input = props => ([
-        <Field {...props} key="title" component={TextInput} source="metadata.title" name="metadata.title" label="Metadata title" />,
-        <Field {...props} key="description" component={TextInput} source="metadata.description" name="metadata.description" label="Metadata description" />,
-      ]);
+      categories.edit = props => (
+        <Edit {...props}>
+          <SimpleForm>
+            <DisabledInput source="id" />
+            <DisabledInput source="code" />
+            {props.options.inputFactory(categoryName)}
+            {props.options.inputFactory(categoryDescription)}
+            <TextInput source="metadata.title" label="Metadata title" />
+            <TextInput source="metadata.description" label="Metadata description" />
+            {props.options.inputFactory(categoryImage)}
+            {props.options.inputFactory(categoryArticlesCount)}
+            <ColorInput source="overlayColor" />
+          </SimpleForm>
+        </Edit>
+      );
 
       const {
         content,
