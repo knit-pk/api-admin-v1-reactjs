@@ -1,11 +1,10 @@
 
 import React from 'react';
 import {
-  LongTextInput, ImageField, ImageInput, TextField, TextInput,
+  ImageField, ImageInput, TextInput,
 } from 'react-admin';
 import { Field } from 'redux-form';
 import parseHydraDocumentation from '@api-platform/api-doc-parser/lib/hydra/parseHydraDocumentation';
-import Markdown from './Markdown';
 import resolveUser from '../Services/UserResolver';
 import { storeHydraDocs, havingHydraDocs } from '../Storage/HydraDocs';
 
@@ -65,22 +64,12 @@ function parseHydraDocumentationCached(jsonldEntrypoint) {
       };
 
       const {
-        content,
         title,
         commentsCount,
       } = mapBy('name', articles.fields);
 
 
       articles.listFields = [title, commentsCount];
-      commentsCount.field = props => (<TextField key="commentsCount" source="commentsCount" {...props} />);
-      commentsCount.field.defaultProps = {
-        addLabel: true,
-      };
-
-      content.field = props => (<Markdown {...props} source={props.record.content} />);
-      content.input = () => (
-        <LongTextInput key="content" source="content" label="Content" options={{ multiline: true }} />
-      );
 
       const {
         url,

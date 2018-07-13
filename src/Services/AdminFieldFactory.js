@@ -1,6 +1,8 @@
 import React from 'react';
 import { TextField } from 'react-admin';
 import { ColorField } from 'react-admin-color-input';
+import Markdown from '../DocumentationParser/Markdown';
+import { SCHEMA_ID_COLOR, SCHEMA_ID_ARTICLE_BODY } from '../DocumentationParser/SchemaOrg';
 
 const customizeFieldFactory = factory => (field, options) => {
   if (field.field || field.reference !== null) {
@@ -17,8 +19,11 @@ const customizeFieldFactory = factory => (field, options) => {
   }
 
   switch (field.id) {
-    case 'http://schema.org/color':
+    case SCHEMA_ID_COLOR:
       return <ColorField key={field.name} source={field.name} {...props} />;
+
+    case SCHEMA_ID_ARTICLE_BODY:
+      return <Markdown key={field.name} source={field.name} {...props} />;
 
     default:
       return factory(field, options);

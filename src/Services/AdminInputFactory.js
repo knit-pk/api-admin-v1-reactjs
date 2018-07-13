@@ -1,6 +1,9 @@
 import React from 'react';
-import { required, TextInput, DisabledInput } from 'react-admin';
+import {
+  required, TextInput, LongTextInput, DisabledInput,
+} from 'react-admin';
 import { ColorInput } from 'react-admin-color-input';
+import { SCHEMA_ID_COLOR, SCHEMA_ID_ARTICLE_BODY } from '../DocumentationParser/SchemaOrg';
 
 const customizeInputFactory = factory => (input, options) => {
   if (input.input || input.reference !== null) {
@@ -29,13 +32,16 @@ const customizeInputFactory = factory => (input, options) => {
   }
 
   switch (input.id) {
-    case 'http://schema.org/color':
+    case SCHEMA_ID_COLOR:
       if (!props.picker) {
-        // props.picker = 'Photoshop';
-        props.picker = 'Sketch';
+        props.picker = 'Sketch'; // https://casesandberg.github.io/react-color/#usage-include
       }
 
       return <ColorInput key={input.name} source={input.name} {...props} />;
+
+
+    case SCHEMA_ID_ARTICLE_BODY:
+      return <LongTextInput key={input.name} source={input.name} label={input.name} options={{ multiline: true }} {...props} />;
 
     default:
       return factory(input, options);
