@@ -1,7 +1,7 @@
 
 import React from 'react';
 import {
-  Edit, SimpleForm, DisabledInput, Show, SimpleShowLayout, LongTextInput, ImageField, ImageInput, TextField, TextInput,
+  LongTextInput, ImageField, ImageInput, TextField, TextInput,
 } from 'react-admin';
 import { Field } from 'redux-form';
 import parseHydraDocumentation from '@api-platform/api-doc-parser/lib/hydra/parseHydraDocumentation';
@@ -59,50 +59,10 @@ function parseHydraDocumentationCached(jsonldEntrypoint) {
         addIdField: false,
       };
 
-      const {
-        code: categoryCode,
-        name: categoryName,
-        description: categoryDescription,
-        image: categoryImage,
-        articlesCount: categoryArticlesCount,
-        overlayColor: categoryOverlayColor,
-      } = mapBy('name', categories.fields);
-
       categories.listFields = categories.fields.filter(({ name }) => name !== 'metadata');
       categories.listProps = {
         addIdField: false,
       };
-
-      categories.show = props => (
-        <Show {...props}>
-          <SimpleShowLayout>
-            <TextField source="id" />
-            {props.options.fieldFactory(categoryCode)}
-            {props.options.fieldFactory(categoryName)}
-            {props.options.fieldFactory(categoryDescription)}
-            <TextField source="metadata.title" label="Metadata title" />
-            <TextField source="metadata.description" label="Metadata description" />
-            {props.options.fieldFactory(categoryImage)}
-            {props.options.fieldFactory(categoryArticlesCount)}
-            {props.options.fieldFactory(categoryOverlayColor)}
-          </SimpleShowLayout>
-        </Show>
-      );
-
-      categories.edit = props => (
-        <Edit {...props}>
-          <SimpleForm>
-            <DisabledInput source="id" />
-            <DisabledInput source="code" />
-            {props.options.inputFactory(categoryDescription)}
-            <TextInput source="metadata.title" label="Metadata title" />
-            <TextInput source="metadata.description" label="Metadata description" />
-            {props.options.inputFactory(categoryImage)}
-            {props.options.inputFactory(categoryArticlesCount)}
-            {props.options.inputFactory(categoryOverlayColor)}
-          </SimpleForm>
-        </Edit>
-      );
 
       const {
         content,
@@ -118,8 +78,8 @@ function parseHydraDocumentationCached(jsonldEntrypoint) {
       };
 
       content.field = props => (<Markdown {...props} source={props.record.content} />);
-      content.input = props => (
-        <Field {...props} name="content" component={LongTextInput} label="Content" source="content" />
+      content.input = () => (
+        <LongTextInput key="content" source="content" label="Content" options={{ multiline: true }} />
       );
 
       const {
