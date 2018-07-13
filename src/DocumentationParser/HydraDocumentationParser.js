@@ -81,11 +81,6 @@ function parseHydraDocumentationCached(jsonldEntrypoint) {
         addIdField: false,
       };
 
-      url.field = props => (<ImageField {...props} key="url" source="url.src" title="image" name="url" label="Image" />);
-      url.field.defaultProps = {
-        addLabel: true,
-      };
-
       url.input = (props) => {
         if (props.record['@id'] !== undefined) {
           return (<Field {...props} key="url" component={TextInput} source="url.src" name="url.src" label="Url" />);
@@ -109,8 +104,6 @@ function parseHydraDocumentationCached(jsonldEntrypoint) {
         ]);
       };
 
-      url.denormalizeData = value => ({ src: value });
-      url.normalizeData = ({ image, src }) => ((image && image.rawFile instanceof File) ? image.rawFile : src);
       images.encodeData = (data) => {
         if (data.url instanceof File) {
           const body = new FormData();

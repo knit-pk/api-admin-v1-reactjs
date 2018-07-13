@@ -1,8 +1,10 @@
 import React from 'react';
-import { TextField } from 'react-admin';
+import { ImageField, TextField } from 'react-admin';
 import { ColorField } from 'react-admin-color-input';
 import Markdown from '../DocumentationParser/Markdown';
-import { SCHEMA_ID_COLOR, SCHEMA_ID_ARTICLE_BODY } from '../DocumentationParser/SchemaOrg';
+import {
+  SCHEMA_ID_COLOR, SCHEMA_ID_ARTICLE_BODY, SCHEMA_ID_CONTENT_URL, SCHEMA_ID_IMAGE_OBJECT,
+} from '../DocumentationParser/SchemaOrg';
 
 const customizeFieldFactory = factory => (field, options) => {
   if (field.field || field.reference !== null) {
@@ -25,9 +27,23 @@ const customizeFieldFactory = factory => (field, options) => {
     case SCHEMA_ID_ARTICLE_BODY:
       return <Markdown key={field.name} source={field.name} {...props} />;
 
+    case SCHEMA_ID_CONTENT_URL:
+      if (options.resource.id === SCHEMA_ID_IMAGE_OBJECT) {
+        field.denormalizeData = value => ({ src: value });
+        field.normalizeData = ({ image, src }) => ((image && image.rawFile instanceof File) ? image.rawFile : src);
+        return ([
+          <ImageField key={`${field.name}.img`} source={`${field.name}.src`} label="Image" addLabel />,
+          <TextField key={`${field.name}.url`} source={`${field.name}.src`} label="Url" />,
+        ]);
+      }
+      break;
+
     default:
-      return factory(field, options);
+      // Do nothing
+      break;
   }
+
+  return factory(field, options);
 };
 
 export default customizeFieldFactory;
