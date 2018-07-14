@@ -1,9 +1,4 @@
 
-import React from 'react';
-import {
-  ImageField, ImageInput, TextInput,
-} from 'react-admin';
-import { Field } from 'redux-form';
 import parseHydraDocumentation from '@api-platform/api-doc-parser/lib/hydra/parseHydraDocumentation';
 import resolveUser from '../Services/UserResolver';
 import { storeHydraDocs, havingHydraDocs } from '../Storage/HydraDocs';
@@ -81,29 +76,8 @@ function parseHydraDocumentationCached(jsonldEntrypoint) {
         addIdField: false,
       };
 
-      url.input = (props) => {
-        if (props.record['@id'] !== undefined) {
-          return (<Field {...props} key="url" component={TextInput} source="url.src" name="url.src" label="Url" />);
-        }
-
-        return ([
-          <Field
-            {...props}
-            key="url.image"
-            component={ImageInput}
-            accept="image/*"
-            multiple={false}
-            name="url.image"
-            source="url.src"
-            label="Image"
-            placeholder={<p>Drop a picture to upload, or click to select it. When you do not want to upload an image use fields bellow.</p>}
-          >
-            <ImageField {...props} source="url.src" title="image" />
-          </Field>,
-          <Field {...props} key="url.src" component={TextInput} source="url.src" name="url.src" label="Url" />,
-        ]);
-      };
-
+      url.denormalizeData = value => ({ src: value });
+      url.normalizeData = ({ dropzone, src }) => ((dropzone && dropzone.rawFile instanceof File) ? dropzone.rawFile : src);
       images.encodeData = (data) => {
         if (data.url instanceof File) {
           const body = new FormData();

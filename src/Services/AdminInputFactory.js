@@ -3,7 +3,10 @@ import {
   required, TextInput, LongTextInput, DisabledInput,
 } from 'react-admin';
 import { ColorInput } from 'react-admin-color-input';
-import { SCHEMA_ID_COLOR, SCHEMA_ID_ARTICLE_BODY } from '../DocumentationParser/SchemaOrg';
+import {
+  SCHEMA_ID_COLOR, SCHEMA_ID_ARTICLE_BODY, SCHEMA_ID_CONTENT_URL, SCHEMA_ID_IMAGE_OBJECT,
+} from '../DocumentationParser/SchemaOrg';
+import SingleImageInput from '../DocumentationParser/SingleImageInput';
 
 const customizeInputFactory = factory => (input, options) => {
   if (input.input || input.reference !== null) {
@@ -41,11 +44,20 @@ const customizeInputFactory = factory => (input, options) => {
 
 
     case SCHEMA_ID_ARTICLE_BODY:
-      return <LongTextInput key={input.name} source={input.name} label={input.name} options={{ multiline: true }} {...props} />;
+      return <LongTextInput key={input.name} source={input.name} options={{ multiline: true }} {...props} />;
+
+    case SCHEMA_ID_CONTENT_URL:
+      if (options.resource.id === SCHEMA_ID_IMAGE_OBJECT) {
+        return <SingleImageInput key={input.name} source={input.name} {...props} />;
+      }
+      break;
 
     default:
-      return factory(input, options);
+      // Do nothing
+      break;
   }
+
+  return factory(input, options);
 };
 
 export default customizeInputFactory;

@@ -29,8 +29,6 @@ const customizeFieldFactory = factory => (field, options) => {
 
     case SCHEMA_ID_CONTENT_URL:
       if (options.resource.id === SCHEMA_ID_IMAGE_OBJECT) {
-        field.denormalizeData = value => ({ src: value });
-        field.normalizeData = ({ image, src }) => ((image && image.rawFile instanceof File) ? image.rawFile : src);
         return ([
           <ImageField key={`${field.name}.img`} source={`${field.name}.src`} label="Image" addLabel />,
           <TextField key={`${field.name}.url`} source={`${field.name}.src`} label="Url" />,
