@@ -6,7 +6,7 @@ import { ColorInput } from 'react-admin-color-input';
 import {
   SCHEMA_ID_COLOR, SCHEMA_ID_ARTICLE_BODY, SCHEMA_ID_CONTENT_URL, SCHEMA_ID_IMAGE_OBJECT,
 } from '../DocumentationParser/SchemaOrg';
-import SingleImageInput from '../DocumentationParser/SingleImageInput';
+import { SingleImageInput } from '../Components';
 
 const customizeInputFactory = factory => (input, options) => {
   if (input.input || input.reference !== null) {
