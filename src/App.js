@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {
   AdminBuilder, hydraClient, fetchHydra, fieldFactory as adminFieldFactory, inputFactory as adminInputFactory,
 } from '@api-platform/admin';
-import { Dashboard } from './Components';
+import { Dashboard, LoaderPacman } from './Components';
 import documentationParser from './DocumentationParser/HydraDocumentationParser';
 import authClient from './Client/AuthClient';
 import customSagas from './Sagas';
@@ -33,7 +33,7 @@ class App extends Component {
 
   render() {
     if (this.state.api === null) {
-      return <div>Loading...</div>;
+      return <LoaderPacman />;
     }
 
     return (
