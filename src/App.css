@@ -1,3 +1,9 @@
+
+/*
+ Loaders.css
+ */
+ @import '~loaders.css/loaders.min.css';
+
 .App {
   text-align: center;
 }
