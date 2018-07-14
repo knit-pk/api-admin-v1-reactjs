@@ -1,7 +1,7 @@
 import React from 'react';
 import { ImageField, TextField } from 'react-admin';
 import { ColorField } from 'react-admin-color-input';
-import Markdown from '../DocumentationParser/Markdown';
+import { Markdown } from '../Components';
 import {
   SCHEMA_ID_COLOR, SCHEMA_ID_ARTICLE_BODY, SCHEMA_ID_CONTENT_URL, SCHEMA_ID_IMAGE_OBJECT,
 } from '../DocumentationParser/SchemaOrg';

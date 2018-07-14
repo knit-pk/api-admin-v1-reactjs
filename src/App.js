@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {
   AdminBuilder, hydraClient, fetchHydra, fieldFactory as adminFieldFactory, inputFactory as adminInputFactory,
 } from '@api-platform/admin';
-import Dashboard from './Dashboard/Dashboard';
+import { Dashboard } from './Components';
 import documentationParser from './DocumentationParser/HydraDocumentationParser';
 import authClient from './Client/AuthClient';
 import customSagas from './Sagas';
