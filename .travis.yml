@@ -17,7 +17,7 @@ matrix:
     - node_js: '10'
 
 before_install:
-  - npm install yarn -g
+  - export PATH="$(yarn global bin):$PATH"
   - yarn global add greenkeeper-lockfile@1
 
 before_script:
