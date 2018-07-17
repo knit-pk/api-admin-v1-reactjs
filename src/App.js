@@ -26,9 +26,8 @@ class App extends Component {
   }
 
   componentDidMount() {
-    documentationParser(APP_ENTRYPOINT).then(({ api }) => {
-      this.setState({ api });
-    });
+    documentationParser(APP_ENTRYPOINT)
+      .then(this.setState.bind(this));
   }
 
   render() {
