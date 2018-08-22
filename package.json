@@ -5,7 +5,7 @@
   "homepage": "http://api.knit.pk.edu.pl/admin",
   "private": true,
   "dependencies": {
-    "@api-platform/admin": "^0.5.0",
+    "@api-platform/admin": "^0.5.1",
     "@api-platform/api-doc-parser": "^0.5.0",
     "@iktakahiro/markdown-it-katex": "^3.0.3",
     "circular-json": "^0.5.4",
