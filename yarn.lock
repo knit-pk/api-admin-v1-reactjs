@@ -2,12 +2,12 @@
 # yarn lockfile v1
 
 
-"@api-platform/admin@^0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@api-platform/admin/-/admin-0.5.0.tgz#46f924f4c692ce0ab75a24236fdf2c791b36ba81"
+"@api-platform/admin@^0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@api-platform/admin/-/admin-0.5.1.tgz#6a6e9e6bb403f34ba24759617d3a6cc9d62b8ce6"
   dependencies:
     "@api-platform/api-doc-parser" "^0.4"
-    babel-runtime "^6.23"
+    "@babel/runtime" "7.0.0-beta.55"
     jsonld "^0.4"
     lodash.isplainobject "^4.0.6"
     prop-types "^15.5.7"
@@ -30,7 +30,7 @@
     jsonld "^0.4.11"
     lodash.get "^4.4.2"
 
-"@babel/runtime@^7.0.0-beta.42":
+"@babel/runtime@7.0.0-beta.55", "@babel/runtime@^7.0.0-beta.42":
   version "7.0.0-beta.55"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.0.0-beta.55.tgz#0bc33aa5a6ac0b012f37e25b9e6aaa2e489a916b"
   dependencies:
@@ -1085,7 +1085,7 @@ babel-register@^6.26.0:
     mkdirp "^0.5.1"
     source-map-support "^0.4.15"
 
-babel-runtime@6.26.0, babel-runtime@^6.18.0, babel-runtime@^6.22.0, babel-runtime@^6.23, babel-runtime@^6.23.0, babel-runtime@^6.26.0, babel-runtime@~6.26.0:
+babel-runtime@6.26.0, babel-runtime@^6.18.0, babel-runtime@^6.22.0, babel-runtime@^6.23.0, babel-runtime@^6.26.0, babel-runtime@~6.26.0:
   version "6.26.0"
   resolved "https://registry.yarnpkg.com/babel-runtime/-/babel-runtime-6.26.0.tgz#965c7058668e82b55d7bfe04ff2337bc8b5647fe"
   dependencies:
