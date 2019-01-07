@@ -7,7 +7,7 @@
   "dependencies": {
     "@api-platform/admin": "^0.5.1",
     "@api-platform/api-doc-parser": "^0.5.0",
-    "@iktakahiro/markdown-it-katex": "3.0.3",
+    "@iktakahiro/markdown-it-katex": "3.1.0",
     "circular-json": "^0.5.4",
     "highlightjs": "^9.10.0",
     "jwt-decode": "^2.2.0",
